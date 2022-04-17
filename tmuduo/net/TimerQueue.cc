@@ -69,6 +69,7 @@ void resetTimerfd(int timerfd, Timestamp expiration)
 }
 
 using namespace tmuduo::net;
+using namespace tmuduo::detail;
 using namespace tmuduo::net::detail;
 
 TimerQueue::TimerQueue(EventLoop* loop)
@@ -95,14 +96,22 @@ TimerId TimerQueue::addTimer(TimerCallback cb,
   std::unique_ptr<Timer> timer = std::make_unique<Timer>(std::move(cb), when, interval);
   TimerId timerId(timer->sequence());
   // unique_ptr 不可按值传递
-  auto f = [&] {
-    addTimerInLoop(std::move(timer));
-  };
-  loop_->runInLoop(f);
+  // loop_->runInLoop(make_copyable_function(
+  //   [&, _timer = std::move(timer)]() mutable {
+  //     addTimerInLoop(std::move(_timer));
+  //   }
+  // )
+  // );
+
+  loop_->runInLoop(MakeCopyableFunction(
+    [&, _timer = std::move(timer)]() mutable {
+      addTimerInLoop(std::move(_timer));
+    }
+  ));
   return timerId;
 }
 
-void TimerQueue::addTimerInLoop(std::unique_ptr<Timer> &&timer)
+void TimerQueue::addTimerInLoop(std::unique_ptr<Timer>&& timer) 
 {
   loop_->assertInLoopThread();
   Timestamp when = timer->expiration();
@@ -164,7 +173,6 @@ void TimerQueue::handleRead()
 
     for (const auto &[_, timerId] : expired)
     {
-      // LOG_DEBUG << timerId.timer_;
       assert(timers_.count(timerId) > 0);
       auto &timer = timers_[timerId];
       timer->run();

@@ -156,6 +156,7 @@ void EventLoop::readWakeupFd()
 
 void EventLoop::doPendingFunctors()
 {
+// LOG_TRACE;
   std::vector<Functor> functors;
   callingPendingFunctors_.store(true);
 
@@ -163,7 +164,7 @@ void EventLoop::doPendingFunctors()
     std::scoped_lock<std::mutex> lock(mutex_);
     functors.swap(pendingFunctors_);
   }
-
+// LOG_TRACE << functors.size();
   for (const auto& functor : functors)
   {
     functor();
