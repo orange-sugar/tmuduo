@@ -6,9 +6,9 @@
 #include <functional>
 #include <memory>
 
-// using std::placeholders::_1;
-// using std::placeholders::_2;
-// using std::placeholders::_3;
+using std::placeholders::_1;
+using std::placeholders::_2;
+using std::placeholders::_3;
 
 // template<typename T>
 // inline T* get_pointer(const std::shared_ptr<T>& ptr)
@@ -36,6 +36,11 @@
 //   return ::std::static_pointer_cast<To>(f);
 // }
 
+namespace tmuduo
+{
+namespace net
+{
+
 class Buffer;
 class TcpConnection;
 typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
@@ -46,13 +51,16 @@ typedef std::function<void (const TcpConnectionPtr&)> WriteCompleteCallback;
 typedef std::function<void (const TcpConnectionPtr&, size_t)> HighWaterMarkCallback;
 
 // the data has been read to (buf, len)
-typedef std::function<void (const TcpConnectionPtr&,
-                            Buffer* buf,
-                            Timestamp)> MessageCallback;
+typedef std::function<void (const TcpConnectionPtr& conn,
+                            char* buf,
+                            ssize_t n)> MessageCallback;
 
 void defaultConnectionCallback(const TcpConnectionPtr& conn);
 void defaultMessageCallback(const TcpConnectionPtr& conn,
                             Buffer* buffer,
                             Timestamp receiveTime);
+
+} // namespace net
+} // namespace tmuduo
 
 #endif //  CALLBACKS_H
