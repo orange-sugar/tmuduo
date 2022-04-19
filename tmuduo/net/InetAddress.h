@@ -32,6 +32,7 @@ class InetAddress : public copyable
     std::string toIp() const;
     std::string toIpPort() const;
     uint16_t getPort() const;
+    sa_family_t family() const { return addr_.sin_family; }
 
     const struct sockaddr* getSockAddr() const;
     void setSockAddrInet6(const struct sockaddr_in6& addr) { addr6_ = addr; }

@@ -1,4 +1,4 @@
-add_executable(test sockTest.cc)
+add_executable(test acceptorTest.cc)
 target_link_libraries(test tmuduo_base tmuduo_net)
 
 # add_executable(atomic_test atomicTest.cc)
