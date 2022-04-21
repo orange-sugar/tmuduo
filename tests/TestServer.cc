@@ -20,6 +20,7 @@ class TestServer
       server_.setMessageCallback(
         std::bind(&TestServer::onMessage, this, _1, _2, _3)
       );
+      server_.setThreadNum(2);
     }
     void start()
     {
@@ -32,13 +33,13 @@ class TestServer
     {
       if (conn->connected())
       {
-        printf("onConnection(): new Connection [%s] from %s\n",
+        printf("[%d]onConnection(): new Connection [%s] from %s\n", CurrentThread::tid(),
                conn->name().c_str(),
                conn->peerAddress().toIpPort().c_str());
       }
       else  
       {
-        printf("onConnection(): connection [%s] is down\n",
+        printf("[%d]onConnection(): connection [%s] is down\n", CurrentThread::tid(),
                conn->name().c_str());
       }
     }
@@ -47,7 +48,7 @@ class TestServer
                    const char* buf,
                    ssize_t len)
     {
-      printf("onMessage(): received %zd bytes from connection [%s]\n",
+      printf("[%d]onMessage(): received %zd bytes from connection [%s]\n", CurrentThread::tid(),
              len, conn->name().c_str());
     }
 

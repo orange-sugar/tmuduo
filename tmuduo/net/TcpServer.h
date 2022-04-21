@@ -15,10 +15,13 @@ namespace net
 
 class Acceptor;
 class EventLoop;
+class EventLoopThreadPool;
 
 class TcpServer : noncopyable
 {
   public:
+    using ThreadInitCallback = 
+          std::function<void(EventLoop*)>;
     enum class Option
     {
       kNoReusePort,
@@ -33,6 +36,10 @@ class TcpServer : noncopyable
 
     const std::string& hostport() const { return hostport_; }
     const std::string& name() const { return name_; }
+
+    void setThreadNum(int numThreads);
+    void setThreadInitCallback(ThreadInitCallback cb)
+    { threadInitCallback_ = std::move(cb); }
 
     void start();
 
@@ -49,12 +56,16 @@ class TcpServer : noncopyable
 
     void removeConnection(const TcpConnectionPtr& conn);
 
+    void removeConnectionInLoop(const TcpConnectionPtr& conn);
+
     EventLoop* loop_;
     std::string hostport_;
     std::string name_;
     std::unique_ptr<Acceptor> acceptor_;
+    std::unique_ptr<EventLoopThreadPool> threadPool_;
     ConnectionCallback connectionCallback_;
     MessageCallback messageCallback_;
+    ThreadInitCallback threadInitCallback_;
     std::atomic<bool> started_;
 
     int nextConnId_;

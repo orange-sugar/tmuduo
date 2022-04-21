@@ -1,0 +1,69 @@
+
+munmap(0x7efc97bd5000, 79717)           = 0
+set_tid_address(0x7efc97669cd0)         = 451580
+set_robust_list(0x7efc97669ce0, 24)     = 0
+rt_sigaction(SIGRTMIN, {sa_handler=0x7efc97bb9bf0, sa_mask=[], sa_flags=SA_RESTORER|SA_SIGINFO, sa_restorer=0x7efc97bc73c0}, NULL, 8) = 0
+rt_sigaction(SIGRT_1, {sa_handler=0x7efc97bb9c90, sa_mask=[], sa_flags=SA_RESTORER|SA_RESTART|SA_SIGINFO, sa_restorer=0x7efc97bc73c0}, NULL, 8) = 0
+rt_sigprocmask(SIG_UNBLOCK, [RTMIN RT_1], NULL, 8) = 0
+prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+brk(NULL)                               = 0x5594526f9000
+brk(0x55945271a000)                     = 0x55945271a000
+gettid()                                = 451580
+epoll_create1(EPOLL_CLOEXEC)            = 3
+timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC|TFD_NONBLOCK) = 4
+epoll_ctl(3, EPOLL_CTL_ADD, 4, {EPOLLIN|EPOLLPRI, {u32=1383116848, u64=94095526637616}}) = 0
+eventfd2(0, EFD_CLOEXEC|EFD_NONBLOCK)   = 5
+openat(AT_FDCWD, "/etc/localtime", O_RDONLY|O_CLOEXEC) = 6
+fstat(6, {st_mode=S_IFREG|0644, st_size=573, ...}) = 0
+fstat(6, {st_mode=S_IFREG|0644, st_size=573, ...}) = 0
+read(6, "TZif2\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\3\0\0\0\3\0\0\0\0"..., 4096) = 573
+lseek(6, -348, SEEK_CUR)                = 225
+read(6, "TZif2\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\3\0\0\0\3\0\0\0\0"..., 4096) = 348
+close(6)                                = 0
+fstat(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(0x88, 0x9), ...}) = 0
+write(1, "20220421 20:59:46.992432 451580 "..., 121) = 121
+epoll_ctl(3, EPOLL_CTL_ADD, 5, {EPOLLIN|EPOLLPRI, {u32=1383117312, u64=94095526638080}}) = 0
+socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_TCP) = 6
+openat(AT_FDCWD, "/dev/null", O_RDONLY|O_CLOEXEC) = 7
+setsockopt(6, SOL_SOCKET, SO_REUSEPORT, [1], 4) = 0
+setsockopt(6, SOL_SOCKET, SO_REUSEPORT, [0], 4) = 0
+bind(6, {sa_family=AF_INET, sin_port=htons(6912), sin_addr=inet_addr("0.0.0.0")}, 28) = 0
+listen(6, 4096)                         = 0
+epoll_ctl(3, EPOLL_CTL_ADD, 6, {EPOLLIN|EPOLLPRI, {u32=1383119312, u64=94095526640080}}) = 0
+epoll_wait(3, [{EPOLLIN, {u32=1383119312, u64=94095526640080}}], 16, 10000) = 1
+accept4(6, {sa_family=AF_INET, sin_port=htons(40446), sin_addr=inet_addr("127.0.0.1")}, [28->16], SOCK_CLOEXEC|SOCK_NONBLOCK) = 8
+write(1, "20220421 20:59:56.608538 451580 "..., 160) = 160
+getsockname(8, {sa_family=AF_INET, sin_port=htons(6912), sin_addr=inet_addr("127.0.0.1")}, [28->16]) = 0
+write(1, "20220421 20:59:56.608619 451580 "..., 144) = 144
+setsockopt(8, SOL_SOCKET, SO_KEEPALIVE, [1], 4) = 0
+write(1, "20220421 20:59:56.608677 451580 "..., 85) = 85
+write(1, "20220421 20:59:56.608711 451580 "..., 85) = 85
+epoll_ctl(3, EPOLL_CTL_ADD, 8, {EPOLLIN|EPOLLPRI, {u32=1383120256, u64=94095526641024}}) = 0
+write(1, "onConnection(): new Connection ["..., 80) = 80
+epoll_wait(3, [{EPOLLIN, {u32=1383119312, u64=94095526640080}}], 16, 10000) = 1
+accept4(6, {sa_family=AF_INET, sin_port=htons(40456), sin_addr=inet_addr("127.0.0.1")}, [28->16], SOCK_CLOEXEC|SOCK_NONBLOCK) = 9
+write(1, "20220421 21:00:03.984095 451580 "..., 160) = 160
+getsockname(9, {sa_family=AF_INET, sin_port=htons(6912), sin_addr=inet_addr("127.0.0.1")}, [28->16]) = 0
+write(1, "20220421 21:00:03.984188 451580 "..., 144) = 144
+setsockopt(9, SOL_SOCKET, SO_KEEPALIVE, [1], 4) = 0
+write(1, "20220421 21:00:03.984246 451580 "..., 85) = 85
+write(1, "20220421 21:00:03.984280 451580 "..., 85) = 85
+epoll_ctl(3, EPOLL_CTL_ADD, 9, {EPOLLIN|EPOLLPRI, {u32=1383121168, u64=94095526641936}}) = 0
+write(1, "onConnection(): new Connection ["..., 80) = 80
+epoll_wait(3, [{EPOLLIN, {u32=1383121168, u64=94095526641936}}], 16, 10000) = 1
+read(9, "", 65536)                      = 0
+epoll_ctl(3, EPOLL_CTL_DEL, 9, 0x7ffe86e1cc64) = 0
+write(1, "onConnection(): connection [Test"..., 63) = 63
+write(1, "20220421 21:00:08.866470 451580 "..., 143) = 143
+write(1, "20220421 21:00:08.866548 451580 "..., 145) = 145
+close(9)                                = 0
+epoll_wait(3, [{EPOLLIN, {u32=1383120256, u64=94095526641024}}], 16, 10000) = 1
+read(8, "", 65536)                      = 0
+epoll_ctl(3, EPOLL_CTL_DEL, 8, 0x7ffe86e1cc64) = 0
+write(1, "onConnection(): connection [Test"..., 63) = 63
+write(1, "20220421 21:00:10.134827 451580 "..., 143) = 143
+write(1, "20220421 21:00:10.134900 451580 "..., 145) = 145
+close(8)                                = 0
+epoll_wait(3, 0x55945270af50, 16, 10000) = -1 EINTR (Interrupted system call)
+--- SIGINT {si_signo=SIGINT, si_code=SI_KERNEL} ---
++++ killed by SIGINT +++

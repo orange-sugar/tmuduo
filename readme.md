@@ -25,3 +25,6 @@
 
 ## s09
 [2022.04.20]完善TcpConnection，加入读、关闭功能。
+
+## s10
+[2022.04.21]封装EventLoopThread为EventLoopThreadPool，实现多线程TcpServer。
