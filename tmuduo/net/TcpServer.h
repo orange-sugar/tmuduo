@@ -47,6 +47,8 @@ class TcpServer : noncopyable
                                    TcpConnectionPtr>;
     void newConnection(int sockfd, InetAddress peerAddr);
 
+    void removeConnection(const TcpConnectionPtr& conn);
+
     EventLoop* loop_;
     std::string hostport_;
     std::string name_;

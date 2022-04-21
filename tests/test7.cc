@@ -1,6 +1,7 @@
 #include "tmuduo/net/TcpServer.h"
 #include "tmuduo/net/EventLoop.h"
 #include "tmuduo/net/InetAddress.h"
+#include "tmuduo/base/Logging.h"
 
 using namespace tmuduo::net;
 
@@ -29,6 +30,7 @@ void onMessage(const TcpConnectionPtr& conn,
 
 int main()
 {
+  Logger::setLogLevel(Logger::TRACE);
   EventLoop loop;
   InetAddress listenAddr(6912);
   TcpServer server(&loop, listenAddr, "orange", TcpServer::Option::kNoReusePort);

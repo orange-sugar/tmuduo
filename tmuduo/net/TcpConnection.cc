@@ -6,6 +6,7 @@
 #include "tmuduo/net/Channel.h"
 #include "tmuduo/net/EventLoop.h"
 #include "tmuduo/net/Socket.h"
+#include "tmuduo/net/SockOps.h"
 
 using namespace tmuduo::net;
 
@@ -38,11 +39,45 @@ LOG_DEBUG << "TcpConnection::dtor[" << name_ << "] at " << this
 
 void TcpConnection::handleRead(Timestamp receiveTime)
 {
-  // 尚未加入对连接关闭的处理
   loop_->assertInLoopThread();
+  int savedErrno = 0;
   char buf[65536];
   ssize_t n = ::read(channel_->fd(), buf, sizeof(buf));
-  messageCallback_(shared_from_this(), buf, n);
+  if (n > 0)
+  {
+    messageCallback_(shared_from_this(), buf, n);
+  }
+  else if (n == 0)
+  {
+    handleClose();
+  }
+  else  
+  {
+    errno = savedErrno;
+    LOG_SYSERR << "TcpConnection::hanleRead";
+    handleError();
+  }
+}
+
+void TcpConnection::handleClose()
+{
+  loop_->assertInLoopThread();
+  LOG_TRACE << "fd=" << channel_->fd() << " state = " << static_cast<int>(state_);
+  assert(state_ == StateE::kConnected || state_ == StateE::kDisconnecting);
+
+  setState(StateE::kDisconnected);
+  channel_->disableAll();
+
+  TcpConnectionPtr guardThis(shared_from_this());
+  connectionCallback_(guardThis);
+  closeCallback_(guardThis);
+}
+
+void TcpConnection::handleError()
+{
+  int err = sockets::getSocketError(channel_->fd());
+  LOG_ERROR << "TcpConnection::handleError [" << name_
+            << "] - SO_ERROR = " << err << " " << strerror_tl(err);
 }
 
 void TcpConnection::connectionEstablished()
@@ -54,4 +89,16 @@ void TcpConnection::connectionEstablished()
   channel_->enableReading();
 
   connectionCallback_(shared_from_this());
+}
+
+void TcpConnection::connectionDestroyed()
+{
+  loop_->assertInLoopThread();
+  if(state_ == StateE::kConnected)
+  {
+    setState(StateE::kDisconnected);
+    channel_->disableAll();
+    connectionCallback_(shared_from_this());
+  }
+  channel_->remove();
 }

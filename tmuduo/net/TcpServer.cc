@@ -27,6 +27,15 @@ TcpServer::~TcpServer()
 {
   loop_->assertInLoopThread();
   LOG_TRACE << "TcpServer::~TcpServer [" << name_ << "] dtor";
+
+  for (auto & item : connections_)
+  {
+    auto connPtr = item.second;
+    item.second.reset();
+    connPtr->getLoop()->runInLoop(
+      std::bind(&TcpConnection::connectionDestroyed, connPtr)
+    );
+  }
 }
 
 void TcpServer::start()
@@ -61,8 +70,28 @@ void TcpServer::newConnection(int sockfd, InetAddress peerAddr)
                                               sockfd,
                                               localAddr,
                                               peerAddr);
+LOG_DEBUG << "[1] usecount=" << conn.use_count();
   connections_[connName] = conn;
+LOG_DEBUG << "[2] usecount=" << conn.use_count();
   conn->setConnectionCallbcak(connectionCallback_);
   conn->setMessageCallback(messageCallback_);
+
+  conn->setCloseCallback(
+    std::bind(&TcpServer::removeConnection, this, _1)
+  );
+
   conn->connectionEstablished();
+}
+
+
+void TcpServer::removeConnection(const TcpConnectionPtr& conn)
+{
+  loop_->assertInLoopThread();
+  LOG_INFO << "TcpServer::removeConnectionInLoop [" << name_
+           << "] - connection " << conn->name();
+  size_t n = connections_.erase(conn->name());
+  (void)n; assert(n == 1);
+  loop_->runInLoop(
+    std::bind(&TcpConnection::connectionDestroyed, conn)
+  );
 }

@@ -33,7 +33,7 @@ class TcpConnection : noncopyable,
     ~TcpConnection();
 
     EventLoop* getLoop() const { return loop_; }
-    const std::string_view name() const { return name_; }
+    const std::string name() const { return name_; }
     const InetAddress& localAddress() const { return localAddress_; }
     const InetAddress& peerAddress() const { return peerAddress_; }
     bool connected() const { return state_ == StateE::kConnected; }
@@ -42,12 +42,17 @@ class TcpConnection : noncopyable,
     { connectionCallback_ = std::move(cb); }
     void setMessageCallback(MessageCallback cb)
     { messageCallback_ = std::move(cb); }
+    void setCloseCallback(CloseCallback cb)
+    { closeCallback_ = std::move(cb); }
 
     void connectionEstablished();
+    void connectionDestroyed();
 
   private:
-    enum class StateE { kConnecting, kConnected };
+    enum class StateE { kDisconnected, kConnecting, kConnected, kDisconnecting };
     void handleRead(Timestamp receiveTime);
+    void handleClose();
+    void handleError();
     void setState(StateE s) { state_ = s; }
 
     EventLoop* loop_;
@@ -60,6 +65,7 @@ class TcpConnection : noncopyable,
     InetAddress peerAddress_;
     ConnectionCallback connectionCallback_;
     MessageCallback messageCallback_;
+    CloseCallback closeCallback_;
 };
 
 
