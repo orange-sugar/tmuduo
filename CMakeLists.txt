@@ -42,3 +42,5 @@ message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " ${CMAKE_CXX_FLAGS_${BUILD_T
 add_subdirectory(tmuduo/base)
 add_subdirectory(tmuduo/net)
 add_subdirectory(tests)
+
+enable_testing()

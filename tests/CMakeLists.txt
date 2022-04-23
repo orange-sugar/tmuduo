@@ -1,5 +1,8 @@
-add_executable(test TestServer.cc)
-target_link_libraries(test tmuduo_base tmuduo_net)
+add_executable(test Buffer_tests.cc)
+target_link_libraries(test tmuduo_base tmuduo_net gtest gtest_main pthread)
+
+# include(GoogleTest)
+# gtest_discover_tests(test)
 
 # add_executable(test7 test7.cc)
 # target_link_libraries(test7 tmuduo_base tmuduo_net)

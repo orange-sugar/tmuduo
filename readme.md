@@ -28,3 +28,6 @@
 
 ## s10
 [2022.04.21]封装EventLoopThread为EventLoopThreadPool，实现多线程TcpServer。
+
+## s11
+[2022.04.23]完成读写缓冲区Buffer，加入google test，对Buffer进行单元测试。
