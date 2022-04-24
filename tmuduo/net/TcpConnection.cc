@@ -35,10 +35,14 @@ TcpConnection::TcpConnection(EventLoop* loop,
     socket_(new Socket(sockfd)),
     channel_(new Channel(loop, sockfd)),
     localAddress_(std::move(localAddr)),
-    peerAddress_(std::move(peerAddr))
+    peerAddress_(std::move(peerAddr)),
+    highWaterMark_(64*1024*1024)
 {
   channel_->setReadCallback(
     std::bind(&TcpConnection::handleRead, this, _1)
+  );
+  channel_->setWriteCallback(
+    std::bind(&TcpConnection::handleWrite, this)
   );
   channel_->setCloseCallback(
     std::bind(&TcpConnection::handleClose, this)
@@ -71,11 +75,11 @@ void TcpConnection::send(const void* message, size_t len)
       loop_->runInLoop(
         [&] {
           sendInLoop(data);
-        }
-      );
+        });
     }
   }
 }
+
 void TcpConnection::send(const std::string_view& message)
 {
   if (state_ == StateE::kConnected)
@@ -88,10 +92,10 @@ void TcpConnection::send(const std::string_view& message)
     {
       loop_->runInLoop(
         [&] { sendInLoop(message); }
-      );
-    }
+      );}
   }
 }
+
 void TcpConnection::send(Buffer&& message)
 {
   if (state_ == StateE::kConnected)
@@ -105,8 +109,7 @@ void TcpConnection::send(Buffer&& message)
     {
       loop_->runInLoop(
         [&] { sendInLoop(message.retrieveAllAsString()); }
-      );
-    }
+      );}
   }
 }
 
@@ -117,7 +120,62 @@ void TcpConnection::sendInLoop(const std::string_view& message)
 void TcpConnection::sendInLoop(const void* message, size_t len)
 {
   loop_->assertInLoopThread();
-  sockets::write(channel_->fd(), message, len);
+  ssize_t nwrote = 0;
+  ssize_t remaining = len;
+  bool error = false;
+  if(state_ == StateE::kDisconnected)
+  {
+    LOG_WARN << "disconnected, give uo writing";
+  }
+  // channel未关注可写事件/缓冲区没有数据
+  if (!channel_->isWriting() && outputBuffer_.readableBytes() == 0)
+  {
+    nwrote = sockets::write(channel_->fd(), message, len);
+    if (nwrote >= 0)
+    {
+      remaining = len - nwrote;
+      if (remaining == 0 && writeCompleteCallback_)
+      {
+        loop_->queueInLoop(
+          std::bind(writeCompleteCallback_, shared_from_this())
+        );
+      }
+    }
+    else  
+    {
+      nwrote = 0;
+      if (errno != EWOULDBLOCK)
+      {
+        LOG_SYSERR << "TcpConnection::sendInLoop";
+        if (errno == EPIPE)
+        {
+          error = true;
+        }
+      }
+    }
+  }
+
+  assert(remaining <= static_cast<ssize_t>(len));
+
+  // 无错误发生且存在未写完数据
+  if (!error && remaining > 0)
+  {
+    LOG_TRACE << "ready to write more data";
+    size_t oldLen = outputBuffer_.readableBytes();
+    if (oldLen + remaining >= highWaterMark_ &&
+        oldLen < highWaterMark_ && highWaterMarkCallback_)
+    {
+      loop_->queueInLoop(
+        std::bind(highWaterMarkCallback_, shared_from_this(), oldLen+remaining)
+      );
+    }
+    outputBuffer_.append(static_cast<const char*>(message), remaining);
+    if (!channel_->isWriting())
+    {
+      channel_->enableWriting();
+    }
+  }
+  
 }
 
 void TcpConnection::shutdown()
@@ -162,6 +220,45 @@ void TcpConnection::handleRead(Timestamp receiveTime)
     errno = savedErrno;
     LOG_SYSERR << "TcpConnection::hanleRead";
     handleError();
+  }
+}
+
+void TcpConnection::handleWrite()
+{
+  // 此时内核缓冲区中已有数据
+  loop_->assertInLoopThread();
+  if (channel_->isWriting())
+  {
+    ssize_t n = sockets::write(channel_->fd(),
+                               outputBuffer_.peek(),
+                               outputBuffer_.readableBytes());
+    if (n > 0)
+    {
+      outputBuffer_.retrieve(n);
+      if (outputBuffer_.readableBytes() == 0)
+      {
+        channel_->disableWriting();
+        if (writeCompleteCallback_)
+        {
+          loop_->queueInLoop(
+            std::bind(writeCompleteCallback_, shared_from_this())
+          );
+        }
+        if (state_ == StateE::kDisconnecting)
+        {
+          shutdownInLoop();
+        }
+      }
+      else  
+      {
+        LOG_SYSERR << "TcpConnection::handleWrite";
+      }
+    }
+    else  
+    {
+      LOG_TRACE << "Connection fd = " << channel_->fd()
+                << " is down, no more writing";
+    }
   }
 }
 

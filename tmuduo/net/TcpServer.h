@@ -49,6 +49,9 @@ class TcpServer : noncopyable
     void setMessageCallback(MessageCallback cb)
     { messageCallback_ = std::move(cb); }
 
+    void setWriteCompleteCallback(WriteCompleteCallback cb)
+    { writeCompleteCallback_ = std::move(cb); }
+
   private:
     using ConnectionMap = std::map<std::string,
                                    TcpConnectionPtr>;
@@ -65,6 +68,7 @@ class TcpServer : noncopyable
     std::unique_ptr<EventLoopThreadPool> threadPool_;
     ConnectionCallback connectionCallback_;
     MessageCallback messageCallback_;
+    WriteCompleteCallback writeCompleteCallback_;
     ThreadInitCallback threadInitCallback_;
     std::atomic<bool> started_;
 
