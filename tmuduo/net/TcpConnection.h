@@ -1,11 +1,13 @@
 #ifndef TMUDUO_NET_TCPCONNECTION_H
 #define TMUDUO_NET_TCPCONNECTION_H
 
+#include <atomic>
 #include <memory>
 #include <mutex>
 
 #include "tmuduo/base/noncopyable.h"
 #include "tmuduo/base/Types.h"
+#include "tmuduo/net/Buffer.h"
 #include "tmuduo/net/Callbacks.h"
 #include "tmuduo/net/InetAddress.h"
 
@@ -38,6 +40,14 @@ class TcpConnection : noncopyable,
     const InetAddress& peerAddress() const { return peerAddress_; }
     bool connected() const { return state_ == StateE::kConnected; }
 
+    void send(const void* message, size_t len);
+    void send(const std::string_view& message);
+    void send(Buffer&& message);
+
+    void shutdown();
+
+    void setTcpNoDelay(bool on);
+
     void setConnectionCallbcak(ConnectionCallback cb)
     { connectionCallback_ = std::move(cb); }
     void setMessageCallback(MessageCallback cb)
@@ -53,11 +63,16 @@ class TcpConnection : noncopyable,
     void handleRead(Timestamp receiveTime);
     void handleClose();
     void handleError();
+
+    void sendInLoop(const std::string_view& message);
+    void sendInLoop(const void* message, size_t len);
+    void shutdownInLoop();
+
     void setState(StateE s) { state_ = s; }
 
     EventLoop* loop_;
     std::string name_;
-    StateE state_;
+    std::atomic<StateE> state_;
 
     std::unique_ptr<Socket> socket_;
     std::unique_ptr<Channel> channel_;
@@ -66,6 +81,8 @@ class TcpConnection : noncopyable,
     ConnectionCallback connectionCallback_;
     MessageCallback messageCallback_;
     CloseCallback closeCallback_;
+    Buffer inputBuffer_;
+    Buffer outputBuffer_;
 };
 
 

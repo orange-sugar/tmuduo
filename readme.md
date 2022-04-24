@@ -31,3 +31,6 @@
 
 ## s11
 [2022.04.23]完成读写缓冲区Buffer，加入google test，对Buffer进行单元测试。
+[2022.04.24]为TcpConnection类加入shutdown功能，实现写半边的关闭。
+
+
