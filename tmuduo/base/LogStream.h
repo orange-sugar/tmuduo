@@ -2,10 +2,11 @@
 #define LOGSTREAM_H
 
 #include "tmuduo/base/noncopyable.h"
-#include "tmuduo/base/StringPiece.h"
+// #include "tmuduo/base/StringPiece.h"
 #include "tmuduo/base/Types.h"
 #include <assert.h>
 #include <string.h>
+#include <string_view>
 
 const int kSmallBuffer = 4000;
 const int kLargeBuffer = 4000 * 1000;
@@ -49,7 +50,7 @@ class FixedBuffer : noncopyable
     void setCookie(void (*cookie)()) { cookie_ = cookie; }
      
     std::string toString() const { return std::string(data_, length()); }
-    StringPiece toStringPiece() const { return StringPiece(data_, length()); }
+    std::string_view toStringView() const { return std::string_view(data_, length()); }
   
   private:
     const char* end() const { return data_ + sizeof(data_); }
@@ -126,7 +127,7 @@ class LogStream : noncopyable
       return *this;
     }
 
-    self& operator<<(const StringPiece& v)
+    self& operator<<(const std::string_view& v)
     {
       buffer_.append(v.data(), v.size());
       return *this;
@@ -134,7 +135,7 @@ class LogStream : noncopyable
 
     self& operator<<(const LogBuffer& v)
     {
-      *this << v.toStringPiece();
+      *this << v.toStringView();
       return *this;
     }
 

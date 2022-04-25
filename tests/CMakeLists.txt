@@ -1,8 +1,11 @@
 # add_executable(test Buffer_tests.cc)
 # target_link_libraries(test tmuduo_base tmuduo_net gtest gtest_main pthread)
 
-add_executable(test test10.cc)
-target_link_libraries(test tmuduo_base tmuduo_net)
+add_executable(server test9.cc)
+target_link_libraries(server tmuduo_base tmuduo_net)
+
+add_executable(client test11.cc)
+target_link_libraries(client tmuduo_base tmuduo_net)
 
 
 # include(GoogleTest)

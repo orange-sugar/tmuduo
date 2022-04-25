@@ -36,7 +36,7 @@ class TestServer
         printf("[%d]onConnection(): new Connection [%s] from %s\n", CurrentThread::tid(),
                conn->name().c_str(),
                conn->peerAddress().toIpPort().c_str());
-        conn->shutdown();
+        // conn->shutdown();
       }
       else  
       {
