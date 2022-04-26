@@ -36,6 +36,7 @@ class TcpServer : noncopyable
 
     const std::string& hostport() const { return hostport_; }
     const std::string& name() const { return name_; }
+    EventLoop* getLoop() const { return loop_; }
 
     void setThreadNum(int numThreads);
     void setThreadInitCallback(ThreadInitCallback cb)

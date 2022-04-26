@@ -66,7 +66,7 @@ class Buffer : copyable
     const char* findCRLF() const
     {
       const char* crlf = std::search(peek(), beginWrite(), kCRLF, kCRLF+2);
-      return crlf == beginWrite() ? NULL : crlf;
+      return crlf == beginWrite() ? nullptr : crlf;
     }
 
     const char* findCRLF(const char* start) const
@@ -74,7 +74,7 @@ class Buffer : copyable
       assert(peek() <= start);
       assert(start <= beginWrite());
       const char* crlf = std::search(start, beginWrite(), kCRLF, kCRLF+2);
-      return crlf == beginWrite() ? NULL : crlf;
+      return crlf == beginWrite() ? nullptr : crlf;
     }
 
     void retrieve(size_t len)

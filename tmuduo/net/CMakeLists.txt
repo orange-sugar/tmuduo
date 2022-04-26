@@ -14,6 +14,8 @@ file(GLOB_RECURSE net_srcs *.cc)
 add_library(tmuduo_net ${net_srcs})
 target_link_libraries(tmuduo_net tmuduo_base)
 
+add_subdirectory(http)
+
 # install(TARGETS tmuduo_net DESTINATION lib)
 # file(GLOB HEADERS "*.h")
 # install(FILES ${HEADERS} DESTINATION include/tmuduo/net)

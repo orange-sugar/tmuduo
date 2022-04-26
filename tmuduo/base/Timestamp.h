@@ -17,6 +17,11 @@ class Timestamp : public copyable
     {
     }
 
+    void swap(Timestamp& that)
+    {
+      std::swap(microSecondsSinceEpoch_, that.microSecondsSinceEpoch_);
+    }
+
     std::string toString() const;
     std::string toFormattedString(bool showMicroseconds = true) const;
 
