@@ -39,7 +39,7 @@ class Connector : noncopyable,
     static const int kMaxRetryDelayMs = 30*1000;
     static const int kInitRetryDelayMs = 500;
 
-    void setState(States s) { state_.store(s); }
+    void setState(States s) { state_ = s; }
 
     void startInLoop();
     void stopInLoop();
@@ -55,8 +55,10 @@ class Connector : noncopyable,
 
     EventLoop* loop_;
     InetAddress serverAddr_;
-    std::atomic<bool> connect_;
-    std::atomic<States> state_;
+    bool connect_;
+    States state_;
+    //std::atomic<bool> connect_;
+    // std::atomic<States> state_;
     std::unique_ptr<Channel> channel_;
     NewConnectionCalback newConnectionCalback_;
     int retryDelayMs_;

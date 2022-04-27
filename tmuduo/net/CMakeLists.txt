@@ -16,6 +16,20 @@ target_link_libraries(tmuduo_net tmuduo_base)
 
 add_subdirectory(http)
 
-# install(TARGETS tmuduo_net DESTINATION lib)
-# file(GLOB HEADERS "*.h")
-# install(FILES ${HEADERS} DESTINATION include/tmuduo/net)
+install(TARGETS tmuduo_net DESTINATION lib)
+
+set(HEADERS
+  Buffer.h
+  Callbacks.h
+  Channel.h
+  Endian.h
+  EventLoop.h
+  EventLoopThread.h
+  EventLoopThreadPool.h
+  InetAddress.h
+  TcpClient.h
+  TcpConnection.h
+  TcpServer.h
+  TimerId.h
+  )
+install(FILES ${HEADERS} DESTINATION include/tmuduo/net)

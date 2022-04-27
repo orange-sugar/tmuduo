@@ -26,7 +26,7 @@ Connector::~Connector()
 
 void Connector::start()
 {
-  connect_.store(true);
+  connect_ = true;
   loop_->runInLoop(std::bind(&Connector::startInLoop, this));
 }
 
@@ -46,7 +46,7 @@ void Connector::startInLoop()
 
 void Connector::stop()
 {
-  connect_.store(false);
+  connect_ = false;
   loop_->runInLoop(std::bind(&Connector::stopInLoop, this));
   // TODO cancel Timer
 }

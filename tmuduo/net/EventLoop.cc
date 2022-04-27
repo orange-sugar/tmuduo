@@ -74,7 +74,7 @@ void EventLoop::loop()
 {
   assert(!looping_);
   assertInLoopThread();
-  looping_.store(true);
+  looping_ = (true);
   LOG_TRACE << "EventLoop at[" << this << "] starts looping";
 
   while (!quit_)
@@ -86,19 +86,19 @@ void EventLoop::loop()
     {
       printActiveChannels();
     }
-    eventHandling_.store(true);
+    eventHandling_ = (true);
     for (const auto channel : activeChannels_)
     {
       currentActiveChannel_ = channel;
       channel->handleEvent(pollReturnTime_);
     }
     currentActiveChannel_ = nullptr;
-    eventHandling_.store(false);
+    eventHandling_ = (false);
     doPendingFunctors();
   }
   
   LOG_TRACE << "EventLoop at[" << this << "] stops looping";
-  looping_.store(false);
+  looping_ = (false);
 }
 
 void EventLoop::quit()
@@ -158,7 +158,7 @@ void EventLoop::doPendingFunctors()
 {
 // LOG_TRACE;
   std::vector<Functor> functors;
-  callingPendingFunctors_.store(true);
+  callingPendingFunctors_ = (true);
 
   {
     std::scoped_lock<std::mutex> lock(mutex_);
@@ -170,7 +170,7 @@ void EventLoop::doPendingFunctors()
     functor();
   }
 
-  callingPendingFunctors_.store(false);
+  callingPendingFunctors_ = (false);
 }
 
 void EventLoop::updateChannel(Channel* channel)

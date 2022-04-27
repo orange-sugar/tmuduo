@@ -15,7 +15,7 @@ bool benchmark = false;
 
 void onRequest(const HttpRequest& req, HttpResponse* resp)
 {
-  std::cout << "Headers " << req.methodString() << " " << req.path() << std::endl;
+  // std::cout << "Headers " << req.methodString() << " " << req.path() << std::endl;
   if (!benchmark)
   {
     const auto& headers = req.headers();
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
     numThreads = atoi(argv[1]);
   }
   EventLoop loop;
-  HttpServer server(&loop, InetAddress(8000), "orange", TcpServer::Option::kReusePort);
+  HttpServer server(&loop, InetAddress(8000), "orange", TcpServer::Option::kNoReusePort);
   server.setHttpCallback(onRequest);
   server.setThreadNum(numThreads);
   server.start();

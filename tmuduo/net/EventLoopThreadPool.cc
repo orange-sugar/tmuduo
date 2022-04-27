@@ -1,5 +1,7 @@
 #include "tmuduo/net/EventLoopThreadPool.h"
 
+#include <assert.h>
+
 #include "tmuduo/net/EventLoop.h"
 #include "tmuduo/net/EventLoopThread.h"
 

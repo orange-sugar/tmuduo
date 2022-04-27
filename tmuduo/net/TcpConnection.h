@@ -82,7 +82,7 @@ class TcpConnection : noncopyable,
     void sendInLoop(const void* message, size_t len);
     void shutdownInLoop();
 
-    void setState(StateE s) { state_.store(s); }
+    void setState(StateE s) { state_ = s; }
 
     EventLoop* loop_;
     std::string name_;

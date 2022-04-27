@@ -104,10 +104,13 @@ class EventLoop : noncopyable
     //debug
     void printActiveChannels() const;
 
-    std::atomic<bool> looping_;
+    //std::atomic<bool> 
+    bool looping_;
     std::atomic<bool> quit_;
-    std::atomic<bool> eventHandling_;
-    std::atomic<bool> callingPendingFunctors_;
+    // std::atomic<bool> 
+    bool eventHandling_;
+    // std::atomic<bool> 
+    bool callingPendingFunctors_;
     const pid_t threadId_;
     Timestamp pollReturnTime_;
     std::unique_ptr<Poller> poller_;
