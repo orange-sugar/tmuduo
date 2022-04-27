@@ -79,8 +79,15 @@ void EPollPoller::fillActiveChannels(int numEvents, ChannelList* activeChannels)
 void EPollPoller::updateChannel(Channel* channel)
 {
   Poller::assertInLoopThread();
-  LOG_TRACE << "fd = " << channel->fd() << " events = " << channel->events();
+  // LOG_DEBUG << "all fds in channelMap_:";
+  // {
+  //   for (const auto& e : channels_)
+  //   {
+  //     printf("%d %d\n", e.first, e.second->events());
+  //   }
+  // }
   const int index = channel->index();
+  LOG_TRACE << "fd = " << channel->fd() << " events = " << channel->events() << " index = " << index;
   if (index == kNew || index == kDeleted)
   {
     int fd = channel->fd();
@@ -125,7 +132,7 @@ void EPollPoller::removeChannel(Channel* channel)
   assert(channels_[fd] == channel);
   assert(channel->isNoneEvent());
   int index = channel->index();
-  assert(index == kDeleted || index == kDeleted);
+  assert(index == kAdded || index == kDeleted);
   size_t n = channels_.erase(fd);
   (void)n;
   assert(n == 1);
@@ -144,6 +151,8 @@ void EPollPoller::update(int operation, Channel* channel)
   event.events = channel->events();
   event.data.ptr = channel;
   int fd = channel->fd();
+  LOG_TRACE << "epoll_ctl op = " << operationToString(operation)
+    << " fd = " << fd << " event = { " << channel->eventsToString() << " }";
   if (::epoll_ctl(epollfd_, operation, fd, &event) < 0)
   {
     if (operation == EPOLL_CTL_DEL)
@@ -154,5 +163,21 @@ void EPollPoller::update(int operation, Channel* channel)
     {
       LOG_SYSFATAL << "epoll_ctl op=" << operation << " fd=" << fd;
     }
+  }
+}
+
+const char* EPollPoller::operationToString(int op)
+{
+  switch (op)
+  {
+    case EPOLL_CTL_ADD:
+      return "ADD";
+    case EPOLL_CTL_DEL:
+      return "DEL";
+    case EPOLL_CTL_MOD:
+      return "MOD";
+    default:
+      assert(false && "ERROR op");
+      return "Unknown Operation";
   }
 }

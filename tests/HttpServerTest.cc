@@ -53,6 +53,7 @@ void onRequest(const HttpRequest& req, HttpResponse* resp)
 
 int main(int argc, char* argv[])
 {
+  Logger::setLogLevel(Logger::TRACE);
   int numThreads = 0;
   if (argc > 1)
   {

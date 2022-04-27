@@ -26,6 +26,7 @@ class EPollPoller : public Poller
   private:
     static const int kInitEventListSize = 16;
     void fillActiveChannels(int numEvents, ChannelList* activeChannels);
+    const char* operationToString(int op);
     void update(int operation, Channel* channel);
     
     using EventList = std::vector<struct epoll_event>;

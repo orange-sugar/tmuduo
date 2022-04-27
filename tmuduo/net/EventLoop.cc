@@ -188,8 +188,9 @@ void EventLoop::removeChannel(Channel* channel)
   {
     assert(currentActiveChannel_ == channel || 
            std::find(activeChannels_.begin(), activeChannels_.end(), channel) == activeChannels_.end());
-    poller_->removeChannel(channel);
+    // bug here fixed
   }
+  poller_->removeChannel(channel);
 }
 
 void EventLoop::abortNotInLoopThread()

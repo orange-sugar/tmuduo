@@ -24,7 +24,7 @@ Channel::Channel(EventLoop* loop, int fd)
     eventHandling_(false),
     addedToLoop_(false)
 {
-
+  // LOG_DEBUG << " create channel " << CurrentThread::stackTrace(true);
 }
 
 Channel::~Channel()
@@ -119,14 +119,14 @@ std::string Channel::eventsToString(int fd, int ev)
     oss << "PRI ";
   if (ev & POLLOUT)
     oss << "OUT ";
-  if (ev & POLLERR)
-    oss << "ERR ";
   if (ev & POLLHUP)
     oss << "HUP ";
-  if (ev & POLLNVAL)
-    oss << "NVAL ";
   if (ev & POLLRDHUP)
     oss << "RDHUP ";
+  if (ev & POLLERR)
+    oss << "ERR ";
+  if (ev & POLLNVAL)
+    oss << "NVAL ";
   return oss.str();
 }
 

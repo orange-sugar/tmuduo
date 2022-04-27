@@ -16,6 +16,7 @@ Acceptor::Acceptor(EventLoop* loop, const InetAddress& listenAddr, bool reusepor
     listenning_(false),
     idleFd_(::open("/dev/null", O_RDONLY | O_CLOEXEC))
 {
+LOG_TRACE << "Acceptor::ctor, acceptSock->fd=" << acceptSocket_.fd();
   assert(idleFd_ >= 0);
   acceptSocket_.setReuseAddr(true);
   acceptSocket_.setReusePort(reuseport);
@@ -27,6 +28,7 @@ Acceptor::Acceptor(EventLoop* loop, const InetAddress& listenAddr, bool reusepor
 
 Acceptor::~Acceptor()
 {
+LOG_TRACE << "Acceptor::dtor, acceptSock->fd=" << acceptSocket_.fd();
   acceptchannel_.disableAll();
   acceptchannel_.remove();
   ::close(idleFd_);
