@@ -62,8 +62,11 @@ class TcpConnection : noncopyable,
     { messageCallback_ = std::move(cb); }
     void setWriteCompleteCallback(WriteCompleteCallback cb)
     { writeCompleteCallback_ = std::move(cb); }
-    void setHighWaterMarkCallback(HighWaterMarkCallback cb)
-    { highWaterMarkCallback_ = std::move(cb); }
+    void setHighWaterMarkCallback(HighWaterMarkCallback cb, size_t highWaterMark)
+    { 
+      highWaterMarkCallback_ = std::move(cb);
+      highWaterMark_ = highWaterMark;
+    }
 
     void setCloseCallback(CloseCallback cb)
     { closeCallback_ = std::move(cb); }

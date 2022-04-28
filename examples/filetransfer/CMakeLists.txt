@@ -1,0 +1,2 @@
+add_executable(filetransfer_download download.cc)
+target_link_libraries(filetransfer_download tmuduo_net)
