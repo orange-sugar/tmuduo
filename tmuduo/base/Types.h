@@ -1,6 +1,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <limits>
 #include <stdint.h>
 #include <string.h>  // memset
 #include <string>
