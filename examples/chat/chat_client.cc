@@ -28,7 +28,7 @@ class ChatClient : noncopyable
 
     void connect() { client_.connect(); }
     
-    void disconnect() { client_.disconnect(); }
+    void disconnect() { /*client_.disconnect();*/ }
 
     void write(const std::string& message)
     {
@@ -60,7 +60,7 @@ class ChatClient : noncopyable
                          const std::string message,
                          Timestamp)
     {
-      printf("<<< %s\n", message.c_str())
+      printf("<<< %s\n", message.c_str());
     }
 
     TcpClient client_;
@@ -68,3 +68,27 @@ class ChatClient : noncopyable
     std::mutex mutex_;
     TcpConnectionPtr connection_;
 };
+
+int main(int argc, char* argv[])
+{
+  LOG_INFO << "pid = " <<getppid();
+  if (argc > 2)
+  {
+    EventLoopThread loopThread;
+    auto port = static_cast<uint16_t>(atoi(argv[2]));
+    InetAddress serverAddr(argv[1], port);
+
+    ChatClient client(loopThread.startLoop(), serverAddr);
+    client.connect();
+    std::string line;
+    while (std::getline(std::cin, line))
+    {
+      client.write(line);
+    }
+    client.disconnect();
+  }
+  else  
+  {
+    printf("Usage: %s host_ip port\n", argv[0]);
+  }
+}
