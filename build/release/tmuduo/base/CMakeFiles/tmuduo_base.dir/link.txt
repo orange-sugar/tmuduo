@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../../lib/libtmuduo_base.a CMakeFiles/tmuduo_base.dir/AsyncLogging.cc.o CMakeFiles/tmuduo_base.dir/CountDownLatch.cc.o CMakeFiles/tmuduo_base.dir/CurrentThread.cc.o CMakeFiles/tmuduo_base.dir/FileUtil.cc.o CMakeFiles/tmuduo_base.dir/LogFile.cc.o CMakeFiles/tmuduo_base.dir/LogStream.cc.o CMakeFiles/tmuduo_base.dir/Logging.cc.o CMakeFiles/tmuduo_base.dir/ProcessInfo.cc.o CMakeFiles/tmuduo_base.dir/ThreadPool.cc.o CMakeFiles/tmuduo_base.dir/Timestamp.cc.o
+/usr/bin/ranlib ../../lib/libtmuduo_base.a

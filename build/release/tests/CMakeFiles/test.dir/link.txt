@@ -1,0 +1,1 @@
+/usr/bin/c++ -g -D_FILE_OFFSET_BITS=64 -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -O2 -DNDEBUG -rdynamic CMakeFiles/test.dir/HttpServerTest.cc.o -o ../bin/test  ../lib/libtmuduo_base.a ../lib/libtmuduo_net.a ../lib/libtmuduo_base.a -lpthread -lrt 
