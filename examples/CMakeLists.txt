@@ -1,1 +1,2 @@
 add_subdirectory(filetransfer)
+add_subdirectory(chat)

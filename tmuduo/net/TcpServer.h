@@ -31,7 +31,7 @@ class TcpServer : noncopyable
     TcpServer(EventLoop* loop,
               InetAddress listenAddr,
               std::string nameArg,
-              Option option);
+              Option option = Option::kNoReusePort);
     ~TcpServer();
 
     const std::string& hostport() const { return hostport_; }
