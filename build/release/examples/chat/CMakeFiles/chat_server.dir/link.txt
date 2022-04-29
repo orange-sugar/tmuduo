@@ -1,1 +1,0 @@
-/usr/bin/c++ -g -D_FILE_OFFSET_BITS=64 -Wall -Wextra -Werror -Wconversion -Wno-unused-parameter -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wshadow -Wwrite-strings -march=native -std=c++17 -rdynamic -O2 -DNDEBUG -rdynamic CMakeFiles/chat_server.dir/chat_server.cc.o -o ../../bin/chat_server  ../../lib/libtmuduo_net.a ../../lib/libtmuduo_base.a -lpthread -lrt 
