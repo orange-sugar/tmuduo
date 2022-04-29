@@ -52,6 +52,7 @@ class LengthHeaderCodec : noncopyable
       int32_t len = static_cast<int32_t>(message.size());
       int32_t be32 = tmuduo::net::sockets::hostToNetwork32(len);
       buf.prepend(&be32, sizeof(be32));
+      conn->send(std::move(buf));
     }
 
   private:
