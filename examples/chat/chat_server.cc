@@ -46,12 +46,12 @@ class ChatServer : noncopyable
     }
 
     void onStringMessage(const TcpConnectionPtr&,
-                         const std::string& messge,
+                         const std::string& message,
                          Timestamp)
     {
       for (auto &conn : connections_)
       {
-        codec_.send(conn.get(), messge);
+        codec_.send(conn.get(), message);
       }
     }
 

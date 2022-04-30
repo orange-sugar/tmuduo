@@ -108,7 +108,7 @@ void TcpConnection::send(Buffer&& message)
     else  
     {
       loop_->runInLoop(
-        [&] { sendInLoop(message.retrieveAllAsString()); }
+        [&, _message = std::move(message)] () mutable { sendInLoop(_message.retrieveAllAsString()); }
       );}
   }
 }

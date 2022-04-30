@@ -28,7 +28,7 @@ class ChatClient : noncopyable
 
     void connect() { client_.connect(); }
     
-    void disconnect() { /*client_.disconnect();*/ }
+    void disconnect() { client_.disconnect(); }
 
     void write(const std::string& message)
     {
@@ -86,6 +86,7 @@ int main(int argc, char* argv[])
       client.write(line);
     }
     client.disconnect();
+   // CurrentThread::sleepUSec(1000*1000);
   }
   else  
   {
