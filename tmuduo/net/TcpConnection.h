@@ -47,6 +47,9 @@ class TcpConnection : noncopyable,
 
     void shutdown();
 
+    void forceClose();
+    void forceCloseWithDelay(double seconds);
+
     void setTcpNoDelay(bool on);
 
     void setContext(const std::any& context)
@@ -67,7 +70,6 @@ class TcpConnection : noncopyable,
       highWaterMarkCallback_ = std::move(cb);
       highWaterMark_ = highWaterMark;
     }
-
     void setCloseCallback(CloseCallback cb)
     { closeCallback_ = std::move(cb); }
 
@@ -84,6 +86,7 @@ class TcpConnection : noncopyable,
     void sendInLoop(const std::string_view& message);
     void sendInLoop(const void* message, size_t len);
     void shutdownInLoop();
+    void forceCloseInLoop();
 
     void setState(StateE s) { state_ = s; }
 

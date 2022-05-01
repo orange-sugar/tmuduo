@@ -12,7 +12,7 @@ class TestServer
   public:
     TestServer(EventLoop* loop, const InetAddress& listenAddr)
       : loop_(loop),
-        server_(loop, listenAddr, "TestServer", TcpServer::Option::kNoReusePort)
+        server_(loop, listenAddr, "TestServer", TcpServer::Option::kReusePort)
     {
       server_.setConnectionCallback(
         std::bind(&TestServer::onConnection, this, _1)
@@ -20,7 +20,7 @@ class TestServer
       server_.setMessageCallback(
         std::bind(&TestServer::onMessage, this, _1, _2, _3)
       );
-      server_.setThreadNum(2);
+      server_.setThreadNum(0);
     }
     void start()
     {
@@ -45,11 +45,15 @@ class TestServer
     }
 
     void onMessage(const TcpConnectionPtr& conn,
-                   const char* buf,
-                   ssize_t len)
+                   Buffer* buf,
+                   Timestamp receiveTime)
     {
       printf("[%d]onMessage(): received %zd bytes from connection [%s]\n", CurrentThread::tid(),
-             len, conn->name().c_str());
+             buf->readableBytes(), conn->name().c_str());
+      conn->send(buf->peek(), buf->readableBytes());
+      buf->retrieveAll();
+      loop_->runAfter(2, []{LOG_INFO << "2";});
+      conn->forceCloseWithDelay(3);
     }
 
     EventLoop* loop_;

@@ -1,16 +1,16 @@
 # add_executable(test HttpRequest_unittest.cc)
 # target_link_libraries(test tmuduo_base tmuduo_net gtest gtest_main)
 
-# add_executable(server test9.cc)
-# target_link_libraries(server tmuduo_base tmuduo_net)
+add_executable(server TestServer.cc)
+target_link_libraries(server tmuduo_base tmuduo_net)
 
 # add_executable(client test11.cc)
 # target_link_libraries(client tmuduo_base tmuduo_net)
 
-add_executable(test HttpServerTest.cc)
-target_link_libraries(test 
-tmuduo_base tmuduo_net
-)
+# add_executable(test HttpServerTest.cc)
+# target_link_libraries(test 
+# tmuduo_base tmuduo_net
+# )
 
 # include(GoogleTest)
 # gtest_discover_tests(test)

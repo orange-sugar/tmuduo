@@ -1,8 +1,7 @@
 #include "tmuduo/net/TcpConnection.h"
 
-
-
 #include "tmuduo/base/Logging.h"
+#include "tmuduo/base/WeakCallBack.h"
 #include "tmuduo/net/Channel.h"
 #include "tmuduo/net/EventLoop.h"
 #include "tmuduo/net/Socket.h"
@@ -194,6 +193,42 @@ void TcpConnection::shutdownInLoop()
   if (!channel_->isWriting())
   {
     socket_->shutdownWrite();
+  }
+}
+
+void TcpConnection::forceClose()
+{
+  StateE oldState = state_.exchange(StateE::kDisconnecting);
+  if (oldState == StateE::kConnected || oldState == StateE::kDisconnecting)
+  {
+    loop_->queueInLoop(std::bind(&TcpConnection::shutdownInLoop, shared_from_this()));
+  }
+  else  
+  {
+    setState(oldState);
+  }
+}
+
+void TcpConnection::forceCloseWithDelay(double seconds)
+{
+  StateE oldState = state_.exchange(StateE::kDisconnecting);
+  if (oldState == StateE::kConnected || oldState == StateE::kDisconnecting)
+  {
+    loop_->runAfter(seconds,
+                    makeWeakCallback(shared_from_this(),&TcpConnection::forceClose));
+  }
+  else  
+  {
+    setState(oldState);
+  }
+}
+
+void TcpConnection::forceCloseInLoop()
+{
+  loop_->assertInLoopThread();
+  if (state_ == StateE::kConnected || state_ == StateE::kDisconnecting)
+  {
+    handleClose();
   }
 }
 
