@@ -1,5 +1,5 @@
-#ifndef TMUDUO_NET_HTTP_HTTPSERVER_H
-#define TMUDUO_NET_HTTP_HTTPSERVER_H
+#ifndef TMUDUO_NET_MYHTTPD_HTTPSERVER_H
+#define TMUDUO_NET_MYHTTPD_HTTPSERVER_H
 
 #include "tmuduo/net/TcpServer.h"
 
@@ -14,12 +14,13 @@ class HttpResponse;
 class HttpServer : noncopyable
 {
   public:
-    using HttpCallback = std::function<void (const HttpRequest&,
-                             HttpResponse*)>;
+    using HttpCallback = std::function<void(const HttpRequest&,
+                                            HttpResponse*)>;
     HttpServer(EventLoop* loop,
                const InetAddress& listenAddr,
                const std::string& name,
                TcpServer::Option option = TcpServer::Option::kNoReusePort);
+    
     EventLoop* getLoop() const { return server_.getLoop(); }
 
     void setHttpCallback(HttpCallback cb) 
@@ -37,13 +38,15 @@ class HttpServer : noncopyable
     void onMessage(const TcpConnectionPtr& conn,
                    Buffer* buf,
                    Timestamp receiveTime);
-    void onRequest(const TcpConnectionPtr&, const HttpRequest&);
-
+    void onRequest(const TcpConnectionPtr& conn,
+                   const HttpRequest&);
+    
     TcpServer server_;
     HttpCallback httpCallback_;
 };
 
-} // namespace net
-} // namespace tmuduo
+} //  namespace net
+} //  namespace tmuduo
 
-#endif	// TMUDUO_NET_HTTP_HTTPSERVER_H
+
+#endif	// TMUDUO_NET_MYHTTPD_HTTPSERVER_H

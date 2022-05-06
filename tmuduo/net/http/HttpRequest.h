@@ -1,8 +1,6 @@
-#ifndef TMUDUO_NET_HTTP_HTTPREQUEST_H
-#define TMUDUO_NET_HTTP_HTTPREQUEST_H
+#ifndef TMUDUO_NET_MYHTTPD_HTTPREQUEST_H
+#define TMUDUO_NET_MYHTTPD_HTTPREQUEST_H
 
-#include <assert.h>
-#include <stdio.h>
 #include <map>
 
 #include "tmuduo/base/copyable.h"
@@ -17,10 +15,13 @@ namespace net
 class HttpRequest : public copyable
 {
   public:
+    // http method
     enum Method
     {
       kInvalid, kGet, kPost, kHead, kPut, kDelete
     };
+    
+    // http version
     enum Version
     {
       kUnknown, kHttp1_0, kHttp1_1
@@ -29,14 +30,15 @@ class HttpRequest : public copyable
     HttpRequest() : method_(kInvalid), version_(kUnknown)
     { }
 
+    // setter and getter for version_
     void setVersion(Version v) { version_ = v; }
-
     Version getVersion() const { return version_; }
 
+    // setter of method
     bool setMethod(const char* start, const char* end)
     {
       assert(method_ == kInvalid);
-      std::string_view m(start, static_cast<size_t>(end - start));
+      std::string m(start, static_cast<size_t>(end - start));
       if (m == "GET")
       {
         method_ = kGet;
@@ -62,76 +64,75 @@ class HttpRequest : public copyable
         method_ = kInvalid;
       }
       return method_ != kInvalid;
-    }
-
-    Method method() const { return method_; }
-
-    const std::string_view methodString() const
+    } 
+    // getter of method
+    Method getMethod() const { return method_; }
+    // convert Method to string
+    const std::string methodToString() const
     {
       switch (method_) {
         case kGet:
-          return std::string_view{"GET"};
+          return std::string{"GET"};
         case kPost:
-          return std::string_view{"POST"};
+          return std::string{"POST"};
         case kHead:
-          return std::string_view{"HEAD"};
+          return std::string{"HEAD"};
         case kPut:
-          return std::string_view{"PUT"};
+          return std::string{"PUT"};
         case kDelete:
-          return std::string_view{"DELETE"};
+          return std::string{"DELETE"};
         default:
-          return std::string_view{"UNKNOWN"};
+          return std::string{"UNKNOWN"};
       }
     }
 
+    // set the path
     void setPath(const char* start, const char* end)
     {
       path_.assign(start, end);
     }
-
-    const std::string& path() const { return path_; }
-
+    // get the path
+    const std::string getPath() const { return path_; }
+    
+    //set the query
     void setQuery(const char* start, const char* end)
     {
       query_.assign(start, end);
     }
-
-    const std::string query() const { return query_; }
-
+    // get the query
+    const std::string getQquery() const { return query_; }
+    
+    // set the receiveTime
     void setReceiveTime(Timestamp t) { receiveTime_ = t; }
+    // get the receiveTime
+    Timestamp getReceiveTime() const { return receiveTime_; }
 
-    Timestamp receiveTime() const { return receiveTime_; }
-
+    // add one header to request
+    // a typical header is formatted as 
+    // fieldname:fieldvalue
     void addHeader(const char* start, const char* colon, const char* end)
     {
-      std::string field(start, colon);
+      std::string fieldName(start, colon);
       ++colon;
-      while (colon < end && isspace(*colon))
+      for (; colon < end && !isspace(*colon); ++colon) ;
+      std::string fieldValue(colon, end);
+      while (!fieldValue.empty() && isspace(fieldValue[fieldValue.size()-1]))
       {
-        ++colon;
+        fieldValue.resize(fieldValue.size()-1);
       }
-      std::string value(colon, end);
-      while (!value.empty() && isspace(value[value.size()-1]))
-      {
-        value.resize(value.size() - 1);
-      }
-      headers_[field] = value;
+      headers_[fieldName] = fieldValue;
     }
 
-    std::string getHeader(const std::string& field) const
+    // get a field value of a field name
+    std::string getHeader(std::string fieldName) const
     {
-      std::string result;
-      const auto it = headers_.find(field);
-      if (it != headers_.end())
-      {
-        result = it->second;
-      }
-      return result;
+      const auto it = headers_.find(fieldName);
+      return it == headers_.end() ? std::string{} : it->second;
     }
 
     const std::map<std::string, std::string>& headers() const
     { return headers_; }
-
+    
     void swap(HttpRequest& rhs)
     {
       std::swap(method_, rhs.method_);
@@ -149,9 +150,10 @@ class HttpRequest : public copyable
     std::string query_;
     Timestamp receiveTime_;
     std::map<std::string, std::string> headers_;
+
 };
 
 } //  namespace net
 } //  namespace tmuduo
 
-#endif	// TMUDUO_NET_HTTP_HTTPREQUEST_H
+#endif	// TMUDUO_NET_MYHTTPD_HTTPREQUEST_H

@@ -1,5 +1,5 @@
-#ifndef TMUDUO_NET_HTTP_HTTPCONNEXT_H
-#define TMUDUO_NET_HTTP_HTTPCONNEXT_H
+#ifndef TMUDUO_NET_MYHTTPD_HTTPCONTEXT_H
+#define TMUDUO_NET_MYHTTPD_HTTPCONTEXT_H
 
 #include "tmuduo/base/copyable.h"
 
@@ -15,6 +15,7 @@ class Buffer;
 class HttpContext : public copyable
 {
   public:
+    // states of parsing 
     enum HttpRequestParseState
     {
       kExpectRequestLine,
@@ -26,6 +27,7 @@ class HttpContext : public copyable
     HttpContext() : state_(kExpectRequestLine)
     { }
 
+    // to parse a request from Buffer
     // return false on error
     bool parseRequest(Buffer* buf, Timestamp receiveTime);
 
@@ -38,18 +40,19 @@ class HttpContext : public copyable
       request_.swap(dummy);
     }
 
-    const HttpRequest& request() const { return request_; }
-    HttpRequest& request() { return request_; }
-  
+    const HttpRequest& getRequest() const { return request_; }
+    HttpRequest& getRequest() { return request_; }
+
   private:
-    bool processRequestLine(const char* begin, const char* end);
+    // parse the first line of a http request like
+    // GET http://xxx.com?xxxx HTTP/1.1
+    bool processRequestLine(const char* start, const char* end);
 
     HttpRequestParseState state_;
     HttpRequest request_;
 };
 
-} // namespace net
-} // namespace tmuduo
+} //  namespace net
+} //  namespace tmuduo
 
-
-#endif	// TMUDUO_NET_HTTP_HTTPCONNEXT_H
+#endif	// TMUDUO_NET_MYHTTPD_HTTPCONTEXT_H

@@ -16,6 +16,7 @@ bool HttpContext::processRequestLine(const char* start, const char* end)
     if (space != end)
     {
       const char* question = std::find(begin, space, '?');
+      // has a query
       if (question != space)
       {
         request_.setPath(begin, question);
@@ -27,6 +28,7 @@ bool HttpContext::processRequestLine(const char* start, const char* end)
       }
       begin = space + 1;
       succeed = end - begin == 8 && std::equal(begin, end-1, "HTTP/1.");
+      
       // only HTTP/1.0 and HTTP/1.1 support
       if (succeed)
       {
@@ -63,7 +65,7 @@ bool HttpContext::parseRequest(Buffer* buf, Timestamp receiveTime)
         if (ok)
         {
           request_.setReceiveTime(receiveTime);
-          buf->retrieveUntil(crlf + 2);
+          buf->retrieveUntil(crlf+2);
           state_ = kExpectHeaders;
         }
         else  
@@ -88,20 +90,20 @@ bool HttpContext::parseRequest(Buffer* buf, Timestamp receiveTime)
         }
         else  
         {
-          // TODO
+          // TODO set to kExpectBody
           state_ = kGotAll;
           hasMore = false;
         }
         buf->retrieveUntil(crlf + 2);
       }
-      else 
+      else  
       {
         hasMore = false;
       }
     }
     else if (state_ == kExpectBody)
     {
-      // TODO parse body
+
     }
   }
   return ok;

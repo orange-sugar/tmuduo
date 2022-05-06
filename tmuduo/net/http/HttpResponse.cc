@@ -1,12 +1,10 @@
 #include "tmuduo/net/http/HttpResponse.h"
 
-#include <stdio.h>
-
 #include "tmuduo/net/Buffer.h"
 
 using namespace tmuduo::net;
 
-void HttpResponse::appendToBuffer(Buffer* output) const
+void HttpResponse::appendToBuffer(Buffer* output) const 
 {
   char buf[32];
   snprintf(buf, sizeof(buf), "HTTP/1.1 %d ", statusCode_);

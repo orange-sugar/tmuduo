@@ -14,11 +14,11 @@ namespace net
 
 namespace detail
 {
-  void defaultHttpCallback(const HttpRequest&, HttpResponse* resp)
+  void defaultHttpCallback(const HttpRequest&, HttpResponse* response)
   {
-    resp->setStatusCode(HttpResponse::k404NotFound);
-    resp->setStatusMessage("Not Found");
-    resp->setCloseConnection(true);
+    response->setStatusCode(HttpResponse::k404NotFound);
+    response->setStatusMessage("Not Found");
+    response->setCloseConnection(true);
   }
 }
 
@@ -32,7 +32,7 @@ HttpServer::HttpServer(EventLoop* loop,
   server_.setConnectionCallback(
     std::bind(&HttpServer::onConnection, this, _1));
   server_.setMessageCallback(
-      std::bind(&HttpServer::onMessage, this, _1, _2, _3));
+    std::bind(&HttpServer::onMessage, this, _1, _2, _3));
 }
 
 void HttpServer::start()
@@ -64,7 +64,7 @@ void HttpServer::onMessage(const TcpConnectionPtr& conn,
 
   if (context->gotAll())
   {
-    onRequest(conn, context->request());
+    onRequest(conn, context->getRequest());
     context->reset();
   }
 }
@@ -79,11 +79,11 @@ void HttpServer::onRequest(const TcpConnectionPtr& conn, const HttpRequest& req)
   Buffer buf;
   response.appendToBuffer(&buf);
   conn->send(std::move(buf));
-  if (response.closeConnection())
+  if (response.isCloseConnection())
   {
     conn->shutdown();
   }
 }
 
-} // namespace net
-} // namespace tmuduo
+} //  namespace net
+} //  namespace tmuduo

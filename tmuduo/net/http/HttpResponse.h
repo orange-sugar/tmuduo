@@ -1,5 +1,5 @@
-#ifndef TMUDUO_NET_HTTP_HTTPRESPONSE_H
-#define TMUDUO_NET_HTTP_HTTPRESPONSE_H
+#ifndef TMUDUO_NET_MYHTTPD_HTTPRESPONSE_H
+#define TMUDUO_NET_MYHTTPD_HTTPRESPONSE_H
 
 #include <map>
 
@@ -12,10 +12,11 @@ namespace net
 {
 
 class Buffer;
-class HttpResponse : public copyable
+
+class HttpResponse : copyable
 {
   public:
-    enum HttpStatusCode 
+    enum HttpStatusCode
     {
       kUnknown,
       k200Ok = 200,
@@ -24,7 +25,7 @@ class HttpResponse : public copyable
       k404NotFound = 404,
     };
 
-    explicit HttpResponse(bool close)
+    HttpResponse(bool close) 
       : statusCode_(kUnknown),
         closeConnection_(close)
     { }
@@ -35,13 +36,11 @@ class HttpResponse : public copyable
 
     void setCloseConnection(bool on) { closeConnection_ = on; }
 
-    bool closeConnection() const { return closeConnection_; }
-
-    // ?
+    bool isCloseConnection() const { return closeConnection_; }
+    
     void setContentType(const std::string& contentType)
     { addHeader("Content-Type", contentType); }
 
-    // TODO use string_view
     void addHeader(const std::string& key, const std::string& value)
     { headers_[key] = value; }
 
@@ -59,7 +58,7 @@ class HttpResponse : public copyable
 
 };
 
-} // namespace net
-} // namespace tmuduo
+} //  namespace net
+} //  namespace tmuduo
 
-#endif	// TMUDUO_NET_HTTP_HTTPRESPONSE_H
+#endif	// TMUDUO_NET_MYHTTPD_HTTPRESPONSE_H
