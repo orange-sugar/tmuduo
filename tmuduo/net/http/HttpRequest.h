@@ -1,6 +1,8 @@
 #ifndef TMUDUO_NET_MYHTTPD_HTTPREQUEST_H
 #define TMUDUO_NET_MYHTTPD_HTTPREQUEST_H
 
+#include <assert.h>
+
 #include <map>
 
 #include "tmuduo/base/copyable.h"

@@ -1,6 +1,7 @@
 #include "tmuduo/net/http/HttpServer.h"
 
 #include "tmuduo/base/FileUtil.h"
+#include "tmuduo/base/Logging.h"
 #include "tmuduo/net/EventLoop.h"
 #include "tmuduo/net/http/HttpContext.h"
 #include "tmuduo/net/http/HttpRequest.h"
@@ -35,7 +36,7 @@ void onRequest(const HttpRequest& request, HttpResponse* response)
             </head>
             
             <body>
-              <center><img src="/favion.ico" width="400px" height="400px" />
+              <center><img src="/favion.ico" width="64px" height="64px" />
               </center>
             </body>
           </html>)"
@@ -43,7 +44,7 @@ void onRequest(const HttpRequest& request, HttpResponse* response)
     }
     else if (request.getPath() == "/favion.ico")
     {
-      ReadSmallFile rf("bitbug_favicon.ico");
+      ReadSmallFile rf("fig.ico");
       int figSize;
       rf.readToBuffer(&figSize);
       response->setStatusCode(HttpResponse::k200Ok);
@@ -62,15 +63,21 @@ void onRequest(const HttpRequest& request, HttpResponse* response)
   }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+  // bool benchmark = false;
+  if (argc > 1)
+  {
+    // benchmark = true;
+    Logger::setLogLevel(Logger::WARN);
+  }
   EventLoop loop;
   InetAddress listenAddr(6912);
 
   HttpServer server(&loop, listenAddr, "MyHttpd", TcpServer::Option::kReusePort);
 
   server.setHttpCallback(onRequest);
-
+  server.setThreadNum(8);
   server.start();
   loop.loop();
 }
