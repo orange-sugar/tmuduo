@@ -169,5 +169,18 @@ size_t AppendFile::write(const char* longline, size_t len)
   return ::fwrite_unlocked(longline, 1, len, fp_);
 }
 
+char* formattedName(char* path)
+{
+  static char buf[32];
+  char *p;
 
+  // Find first character after last slash.
+  for(p=path+strlen(path); p >= path && *p != '/'; p--)
+    ;
+  p++;
+
+  memmove(buf, p, strlen(p));
+  
+  return buf;
+}
 

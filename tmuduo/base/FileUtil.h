@@ -63,6 +63,7 @@ class AppendFile : noncopyable
     off_t writtenBytes_;
 };
 
+char* formattedName(const char* path);
 
 
 
