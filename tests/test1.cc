@@ -1,6 +1,7 @@
 #include "tmuduo/base/Logging.h"
 #include "tmuduo/net/EventLoop.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 int main()

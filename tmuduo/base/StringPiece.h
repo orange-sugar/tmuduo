@@ -5,6 +5,9 @@
 
 #include "tmuduo/base/Types.h"
 
+namespace tmuduo
+{
+
 class StringArg
 {
   public:
@@ -21,5 +24,7 @@ class StringArg
 };
 
 using StringPiece = std::string_view;
+
+} // namespace tmuduo
 
 #endif //  STRINGPIECE_H

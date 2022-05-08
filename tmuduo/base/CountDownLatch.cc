@@ -1,5 +1,7 @@
 #include "tmuduo/base/CountDownLatch.h"
 
+using namespace tmuduo;
+
 CountDownLatch::CountDownLatch(int count)
   : count_(count)
 {

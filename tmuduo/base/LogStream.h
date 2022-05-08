@@ -8,6 +8,10 @@
 #include <string.h>
 #include <string_view>
 
+namespace tmuduo
+{
+namespace detail {
+
 const int kSmallBuffer = 4000;
 const int kLargeBuffer = 4000 * 1000;
 
@@ -63,11 +67,13 @@ class FixedBuffer : noncopyable
     char* cur_;
 };
 
+} // namespace detail
+
 class LogStream : noncopyable
 {
   public:
     using self = LogStream;
-    using LogBuffer = FixedBuffer<kSmallBuffer>;
+    using LogBuffer = detail::FixedBuffer<detail::kSmallBuffer>;
     
   public:
     self& operator<<(bool v)
@@ -173,5 +179,7 @@ inline LogStream& operator<<(LogStream& s, const Fmt& fmt)
   s.append(fmt.data(), fmt.length());
   return s;
 }
+
+} // namespace tmuduo
 
 #endif //  LOGSTREAM_H

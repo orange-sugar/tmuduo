@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 using std::string;
 

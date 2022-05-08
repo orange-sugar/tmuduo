@@ -1,12 +1,16 @@
 #ifndef PROCESSINFO_H
 #define PROCESSINFO_H
 
-#include "tmuduo/base/StringPiece.h"
-#include "tmuduo/base/Types.h"
-#include "tmuduo/base/Timestamp.h"
-#include <vector>
 #include <sys/types.h>
 
+#include <vector>
+
+#include "tmuduo/base/StringPiece.h"
+#include "tmuduo/base/Timestamp.h"
+#include "tmuduo/base/Types.h"
+
+namespace tmuduo
+{
 namespace ProcessInfo
 {
   pid_t pid();
@@ -50,5 +54,6 @@ namespace ProcessInfo
   int numThreads();
   std::vector<pid_t> threads();
 }
+} // namespace tmuduo
 
 #endif //  PROCESSINFO_H

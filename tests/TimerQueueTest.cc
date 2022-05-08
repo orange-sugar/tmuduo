@@ -5,6 +5,7 @@
 #include "tmuduo/net/EventLoop.h"
 #include "tmuduo/net/TimerQueue.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 EventLoop* g_loop;

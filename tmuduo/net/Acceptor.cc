@@ -7,6 +7,7 @@
 #include "tmuduo/net/InetAddress.h"
 #include "tmuduo/net/SockOps.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 Acceptor::Acceptor(EventLoop* loop, const InetAddress& listenAddr, bool reuseport)

@@ -21,6 +21,7 @@ static const in_addr_t kInaddrAny = INADDR_ANY;
 static const in_addr_t kInaddrLoopback = INADDR_LOOPBACK; 
 #pragma GCC diagnostic error "-Wold-style-cast"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 InetAddress::InetAddress(uint16_t port, bool loopbackonly, bool ipv6)

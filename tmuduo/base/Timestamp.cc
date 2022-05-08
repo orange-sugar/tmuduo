@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 
+using namespace tmuduo;
 
 static_assert(sizeof(Timestamp) == sizeof(int64_t),
               "Timestamp is same size as int64_t");

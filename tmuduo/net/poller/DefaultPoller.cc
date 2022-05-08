@@ -4,6 +4,7 @@
 
 #include <cstdlib>
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 Poller* Poller::newDefaultPoller(EventLoop* loop)

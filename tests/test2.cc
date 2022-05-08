@@ -7,6 +7,7 @@
 #include "tmuduo/net/Channel.h"
 #include "tmuduo/base/Logging.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 EventLoop* g_loop;

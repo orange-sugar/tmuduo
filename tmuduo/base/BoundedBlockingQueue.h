@@ -15,6 +15,9 @@ using std::lock_guard;
 using std::unique_lock;
 using std::deque;
 
+namespace tmuduo
+{
+
 template<typename T>
 class BoundedBlockingQueue : noncopyable
 {
@@ -80,5 +83,7 @@ class BoundedBlockingQueue : noncopyable
     condition_variable  notFull_;
     deque<T>            queue_;
 };
+
+} // namespace tmuduo
 
 #endif

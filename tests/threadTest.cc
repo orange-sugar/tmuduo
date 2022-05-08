@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 
+using namespace tmuduo;
+
 void func()
 {
   printf("haha\n");

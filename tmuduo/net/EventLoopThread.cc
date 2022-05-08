@@ -2,6 +2,7 @@
 
 #include "tmuduo/net/EventLoop.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 EventLoopThread::EventLoopThread(ThreadInitCallback cb)

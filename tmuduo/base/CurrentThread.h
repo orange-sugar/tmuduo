@@ -10,7 +10,8 @@
 #include <sys/types.h>
 #include <linux/unistd.h>
 
-
+namespace tmuduo
+{
 namespace CurrentThread 
 {
   pid_t gettid();
@@ -52,6 +53,8 @@ namespace CurrentThread
   void sleepUSec(int64_t usec);
 
   std::string stackTrace(bool demangle);
-}
+
+} // namespace CurrentThread
+} // namespace tmuduo
 
 #endif //  CURRENTTHREAD_H

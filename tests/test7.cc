@@ -5,6 +5,7 @@
 
 using namespace tmuduo::net;
 
+using namespace tmuduo;
 void onConnection(const TcpConnectionPtr& conn)
 {
   if (conn->connected())

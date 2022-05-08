@@ -6,6 +6,9 @@
 #include "tmuduo/net/EventLoop.h"
 #include "tmuduo/base/Logging.h"
 
+
+using namespace tmuduo;
+
 namespace tmuduo
 {
 namespace net

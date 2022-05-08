@@ -8,6 +8,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+using namespace tmuduo;
+using namespace tmuduo::FileUtil;
+
 ReadSmallFile::ReadSmallFile(StringArg filename)
   : fd_(::open(filename.c_str(), O_RDONLY | O_CLOEXEC)),
     err_(0)

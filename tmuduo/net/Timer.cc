@@ -1,5 +1,6 @@
 #include "tmuduo/net/Timer.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 std::atomic<int64_t> Timer::s_numCreated_;

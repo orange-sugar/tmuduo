@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 namespace tmuduo

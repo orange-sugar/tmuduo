@@ -5,6 +5,7 @@
 
 #include "tmuduo/net/SockOps.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 const char Buffer::kCRLF[] = "\r\n";

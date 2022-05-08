@@ -7,6 +7,7 @@
 #include "tmuduo/net/http/HttpRequest.h"
 #include "tmuduo/net/http/HttpResponse.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 class CGIPool : noncopyable
@@ -44,7 +45,7 @@ void onRequest(const HttpRequest& request, HttpResponse* response)
     }
     else if (request.getPath() == "/favion.ico")
     {
-      ReadSmallFile rf("fig.ico");
+      FileUtil::ReadSmallFile rf("fig.ico");
       int figSize;
       rf.readToBuffer(&figSize);
       response->setStatusCode(HttpResponse::k200Ok);
@@ -77,7 +78,7 @@ int main(int argc, char* argv[])
   HttpServer server(&loop, listenAddr, "MyHttpd", TcpServer::Option::kReusePort);
 
   server.setHttpCallback(onRequest);
-  server.setThreadNum(8);
+  server.setThreadNum(0);
   server.start();
   loop.loop();
 }

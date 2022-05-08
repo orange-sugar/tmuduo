@@ -17,6 +17,9 @@ using std::mutex;
 using std::unique_ptr;
 using std::thread;
 
+namespace tmuduo
+{
+
 class AsyncLogging : noncopyable
 {
   public:
@@ -50,7 +53,7 @@ class AsyncLogging : noncopyable
   private:
     void threadFunc();
 
-    using Buffer = FixedBuffer<kLargeBuffer>;
+    using Buffer = detail::FixedBuffer<detail::kLargeBuffer>;
     using BufferVector = std::vector<unique_ptr<Buffer>>;
     using BufferPtr = BufferVector::value_type;
     
@@ -68,5 +71,7 @@ class AsyncLogging : noncopyable
     BufferVector buffers_;
 
 };
+
+} // namespace tmuduo
 
 #endif

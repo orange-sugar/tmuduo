@@ -6,6 +6,7 @@
 #include "tmuduo/net/EventLoopThreadPool.h"
 #include "tmuduo/net/SockOps.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 TcpServer::TcpServer(EventLoop* loop,

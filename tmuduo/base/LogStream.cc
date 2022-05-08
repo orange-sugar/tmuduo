@@ -2,8 +2,15 @@
 
 #include <algorithm>
 
+using namespace tmuduo;
+using namespace tmuduo::detail;
 // const int kSmallBuffer = 4000;
 // const int kLargeBuffer = 4000 * 1000;
+
+namespace tmuduo
+{
+namespace detail
+{
 
 const char digits[] = "9876543210123456789";
 const char* zero = digits + 9;
@@ -57,6 +64,9 @@ size_t convertHex(char buf[], uintptr_t value)
 template class FixedBuffer<kSmallBuffer>;
 template class FixedBuffer<kLargeBuffer>;
 
+} // namespace detail
+} // namespace tmuduo
+
 template<int SIZE>
 const char* FixedBuffer<SIZE>::debugString()
 {
@@ -65,7 +75,6 @@ const char* FixedBuffer<SIZE>::debugString()
 }
 
 template<int SIZE>
-
 void FixedBuffer<SIZE>::cookieStart() 
 {
 }

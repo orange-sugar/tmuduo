@@ -9,6 +9,7 @@
 #include "tmuduo/net/EventLoop.h"
 #include "tmuduo/net/TcpServer.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 class ChatServer : noncopyable

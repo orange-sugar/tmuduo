@@ -1,6 +1,9 @@
 #ifndef NONCOPYABLE_H
 #define NONCOPYABLE_H
 
+namespace tmuduo
+{
+
 class noncopyable 
 {
   public:
@@ -11,5 +14,7 @@ class noncopyable
     noncopyable()  = default;
     ~noncopyable() = default;
 };
+
+} // namespace tmuduo
 
 #endif //  NONCOPYABLE_H

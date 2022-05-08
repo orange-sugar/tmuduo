@@ -15,6 +15,9 @@
 #include <functional>
 #include <stdexcept>
 
+namespace tmuduo
+{
+
 class ThreadPool 
 {
   using ui32 = std::uint_fast32_t;
@@ -233,5 +236,7 @@ class ThreadPool
     std::unique_ptr<std::thread[]> threads_;
     std::atomic<ui32> tasksTotal_ = 0;
 };
+
+} // namespace tmuduo
 
 #endif

@@ -6,6 +6,7 @@
 #include "tmuduo/base/ThreadPool.h"
 #include "tmuduo/base/Timestamp.h"
 
+using namespace tmuduo;
 // int cnt = 0;
 // std::mutex mutex_;
 std::atomic<int> cnt = 0;

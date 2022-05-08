@@ -9,6 +9,9 @@
 
 #include <sstream>
 
+namespace tmuduo
+{
+
 __thread char t_errnobuf[512];
 __thread char t_time[64];
 __thread time_t t_lastSecond;
@@ -80,6 +83,10 @@ void defaultFlush()
 
 Logger::OutputFunc g_output = defaultOutput;
 Logger::FlushFunc g_flush = defaultFlush;
+
+} // namespace tmuduo
+
+using namespace tmuduo;
 
 Logger::Impl::Impl(LogLevel level, int savedErrno, const SourceFile& file, int line)
   : time_(Timestamp::now()),

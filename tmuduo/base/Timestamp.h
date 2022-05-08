@@ -4,6 +4,9 @@
 #include "tmuduo/base/copyable.h"
 #include "tmuduo/base/Types.h"
 
+namespace tmuduo
+{
+
 class Timestamp : public copyable
 {
   public:
@@ -73,5 +76,7 @@ inline Timestamp addTime(Timestamp timestamp, double seconds)
   int64_t delta = static_cast<int64_t>(seconds * Timestamp::kMicroSecondsPerSecond);
   return Timestamp(timestamp.microSecondsSinceEpoch() + delta);
 }
+
+} // namespace tmuduo
 
 #endif //  TIMESTAMP_H

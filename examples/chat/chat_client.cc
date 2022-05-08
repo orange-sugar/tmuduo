@@ -10,6 +10,7 @@
 #include "tmuduo/net/EventLoopThread.h"
 #include "tmuduo/net/TcpClient.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 class ChatClient : noncopyable

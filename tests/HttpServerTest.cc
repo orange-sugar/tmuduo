@@ -7,6 +7,7 @@
 #include "tmuduo/net/EventLoop.h"
 #include "tmuduo/base/Logging.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 using std::string;
 
@@ -15,7 +16,7 @@ bool benchmark = false;
 
 void onRequest(const HttpRequest& req, HttpResponse* resp)
 {
-  // std::cout << "Headers " << req.methodString() << " " << req.path() << std::endl;
+  // std::cout << "Headers " << req.methodString() << " " << req.getPath() << std::endl;
   if (!benchmark)
   {
     const auto& headers = req.headers();
@@ -25,7 +26,7 @@ void onRequest(const HttpRequest& req, HttpResponse* resp)
     }
   }
 
-  if (req.path() == "/")
+  if (req.getPath() == "/")
   {
     resp->setStatusCode(HttpResponse::k200Ok);
     resp->setStatusMessage("OK");
@@ -36,7 +37,7 @@ void onRequest(const HttpRequest& req, HttpResponse* resp)
         "<body>now is " + now +
         "</body></html>");
   }
-  else if (req.path() == "/favicon.ico")
+  else if (req.getPath() == "/favicon.ico")
   {
     resp->setStatusCode(HttpResponse::k200Ok);
     resp->setStatusMessage("OK");

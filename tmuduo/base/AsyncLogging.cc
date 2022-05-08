@@ -4,7 +4,9 @@
 
 #include <cstdio>
 #include <chrono>
+
 using namespace std::chrono_literals;
+using namespace tmuduo;
 
 AsyncLogging::AsyncLogging(const std::string& basename,
                            off_t rollSize,

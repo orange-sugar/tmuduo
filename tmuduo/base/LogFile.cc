@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <cstdio>
 #include <ctime>
+using namespace tmuduo;
 
 LogFile::LogFile(const std::string& basename,
                  off_t rollSize,
@@ -94,7 +95,7 @@ bool LogFile::rollFile()
     lastRoll_ = now;
     lastFlush_ = now;
     startOfPeriod_ = start;
-    file_.reset(new AppendFile(filename));
+    file_.reset(new FileUtil::AppendFile(filename));
     return true;
   }
   return false;

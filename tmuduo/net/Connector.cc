@@ -4,6 +4,7 @@
 #include "tmuduo/net/EventLoop.h"
 #include "tmuduo/net/SockOps.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 const int Connector::kMaxRetryDelayMs;

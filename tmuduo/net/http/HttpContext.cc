@@ -2,6 +2,7 @@
 
 #include "tmuduo/net/Buffer.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 bool HttpContext::processRequestLine(const char* start, const char* end)

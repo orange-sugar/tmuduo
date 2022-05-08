@@ -4,6 +4,7 @@
 #include <thread>
 #include <cstdio>
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 EventLoop* g_loop;

@@ -6,6 +6,9 @@
 
 #include "tmuduo/base/Logging.h"
 
+namespace tmuduo
+{
+
 template <typename C, typename... Args>
 class WeakCallback
 {
@@ -45,6 +48,8 @@ WeakCallback<C, Args...> makeWeakCallback(const std::shared_ptr<C>& object,
                                           void (C::*function)(Args...) const)
 {
   return WeakCallback<C, Args...>(object, function);
-}                                          
+}         
+
+} // namespace tmuduo                                 
 
 #endif	// TMUDUO_BASE_WEAKCALLBACK_H

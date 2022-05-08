@@ -8,6 +8,7 @@
 #include "tmuduo/net/Poller.h"
 #include "tmuduo/net/TimerQueue.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 namespace {

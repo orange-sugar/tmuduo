@@ -1,6 +1,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <memory>
 #include <limits>
 #include <stdint.h>
 #include <string.h>  // memset
@@ -14,6 +15,8 @@
 /// The most common stuffs.
 ///
 
+namespace tmuduo
+{
 
 inline void memZero(void* p, size_t n)
 {
@@ -115,5 +118,40 @@ inline To down_cast(From* f)                     // so we only accept pointers
 #endif
   return static_cast<To>(f);
 }
+
+// https://microeducate.tech/passing-a-non-copyable-closure-object-to-stdfunction-parameter-duplicate/
+template< class F >
+auto make_copyable_function( F&& f ) {
+  using dF = std::decay_t<F>;
+  auto spf = std::make_shared<dF>( std::forward<F>(f) );
+  return [spf](auto&&... args)->decltype(auto) {
+    return (*spf)( decltype(args)(args)... );
+  };
+}
+
+// https://kenkyu-note.hatenablog.com/entry/2019/10/06/194822
+template <class Func>
+struct CopyableFunction
+{
+    CopyableFunction(Func f)
+      : func(std::move(f))
+    {}
+    CopyableFunction(const CopyableFunction&)
+      : func(ThrowException())
+    {}
+    CopyableFunction(CopyableFunction&&) = default;
+    Func ThrowException() { throw std::exception(); }
+
+    template <class ...Args>
+    decltype(auto) operator()(Args&& ...args) const { return func(std::forward<Args>(args)...); }
+    template <class ...Args>
+    decltype(auto) operator()(Args&& ...args) { return func(std::forward<Args>(args)...); }
+    Func func;
+};
+template <class Func>
+CopyableFunction<Func> MakeCopyableFunction(Func func) { return CopyableFunction<Func>(std::move(func)); }
+
+} // namespace tmuduo
+
 
 #endif //  TYPES_H

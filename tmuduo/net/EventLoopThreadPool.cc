@@ -5,6 +5,7 @@
 #include "tmuduo/net/EventLoop.h"
 #include "tmuduo/net/EventLoopThread.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 EventLoopThreadPool::EventLoopThreadPool(EventLoop* baseLoop)

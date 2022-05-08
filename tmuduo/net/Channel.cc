@@ -7,6 +7,7 @@
 #include "tmuduo/net/EventLoop.h"
 #include "tmuduo/base/Logging.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 const int Channel::kNoneEvent = 0;

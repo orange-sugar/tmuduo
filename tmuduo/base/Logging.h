@@ -11,7 +11,8 @@
 
 #include "tmuduo/base/CurrentThread.h"
 
-// class TimeZone;
+namespace tmuduo
+{
 
 class Logger
 {
@@ -129,5 +130,7 @@ T* CheckNotNull(Logger::SourceFile file, int line, const char *names, T* ptr)
   }
   return ptr;
 }
+
+} // namespace tmuduo
 
 #endif

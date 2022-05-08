@@ -4,6 +4,7 @@
 #include <sys/timerfd.h>
 
 #include "tmuduo/base/Logging.h"
+#include "tmuduo/base/Types.h"
 #include "tmuduo/net/EventLoop.h"
 #include "tmuduo/net/Timer.h"
 #include "tmuduo/net/TimerId.h"
@@ -68,8 +69,8 @@ void resetTimerfd(int timerfd, Timestamp expiration)
 
 }
 
+using namespace tmuduo;
 using namespace tmuduo::net;
-using namespace tmuduo::detail;
 using namespace tmuduo::net::detail;
 
 TimerQueue::TimerQueue(EventLoop* loop)

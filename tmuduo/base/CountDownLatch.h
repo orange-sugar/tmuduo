@@ -9,6 +9,9 @@
 using std::mutex;
 using std::condition_variable;
 
+namespace tmuduo
+{
+
 class CountDownLatch : noncopyable
 {
   public:
@@ -25,5 +28,7 @@ class CountDownLatch : noncopyable
     condition_variable condition_;
     int count_;
 };
+
+} // namespace tmuduo
 
 #endif

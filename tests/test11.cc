@@ -6,6 +6,7 @@
 #include "tmuduo/net/EventLoop.h"
 #include "tmuduo/net/InetAddress.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 // class testClient

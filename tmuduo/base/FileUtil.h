@@ -5,6 +5,10 @@
 #include "tmuduo/base/StringPiece.h"
 #include <sys/types.h>
 
+namespace tmuduo
+{
+namespace FileUtil {
+
 class ReadSmallFile : noncopyable
 {
   public:
@@ -65,6 +69,7 @@ class AppendFile : noncopyable
 
 char* formattedName(const char* path);
 
-
+} // namespace FileUtil
+} // namespace tmuduo
 
 #endif //  FILEUTIL_H

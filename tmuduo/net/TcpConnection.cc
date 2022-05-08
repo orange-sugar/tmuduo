@@ -7,6 +7,7 @@
 #include "tmuduo/net/Socket.h"
 #include "tmuduo/net/SockOps.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 void tmuduo::net::defaultConnectionCallback(const TcpConnectionPtr& conn)

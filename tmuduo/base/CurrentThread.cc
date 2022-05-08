@@ -4,6 +4,8 @@
 #include <execinfo.h>
 #include <cstdlib>
 
+namespace tmuduo
+{
 namespace CurrentThread {
 
 pid_t gettid()
@@ -91,4 +93,6 @@ void cacheTid()
     // printf("%d", t_tidStringLength);
   }
 }
-}
+
+} // namespace CurrentThread
+} // namespace tmuduo

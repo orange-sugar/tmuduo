@@ -13,6 +13,11 @@
 #include <sys/resource.h>
 #include <sys/times.h>
 
+namespace tmuduo
+{
+namespace detail
+{
+
 __thread int t_numOpenedFiles = 0;
 int fdDirFilter(const struct dirent* d)
 {
@@ -45,6 +50,12 @@ Timestamp g_startTime = Timestamp::now();
 // assume those won't change during the life time of a process.
 int g_clockTicks = static_cast<int>(::sysconf(_SC_CLK_TCK));
 int g_pageSize = static_cast<int>(::sysconf(_SC_PAGE_SIZE));
+
+} // namespace detail
+} // namespace tmuduo
+
+using namespace tmuduo;
+using namespace tmuduo::detail;
 
 pid_t ProcessInfo::pid()
 {
@@ -143,14 +154,14 @@ StringPiece ProcessInfo::procname(const std::string& stat)
 std::string ProcessInfo::procStatus()
 {
   std::string result;
-  readFile("/proc/self/status", 65536, &result);
+  FileUtil::readFile("/proc/self/status", 65536, &result);
   return result;
 }
 
 std::string ProcessInfo::procStat()
 {
   std::string result;
-  readFile("/proc/self/stat", 65536, &result);
+  FileUtil::readFile("/proc/self/stat", 65536, &result);
   return result;
 }
 
@@ -159,7 +170,7 @@ std::string ProcessInfo::threadStat()
   char buf[64];
   snprintf(buf, sizeof buf, "/proc/self/task/%d/stat", CurrentThread::tid());
   std::string result;
-  readFile(buf, 65536, &result);
+  FileUtil::readFile(buf, 65536, &result);
   return result;
 }
 

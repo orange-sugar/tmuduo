@@ -5,6 +5,7 @@
 #include "tmuduo/net/http/HttpRequest.h"
 #include "tmuduo/net/http/HttpResponse.h"
 
+using namespace tmuduo;
 using namespace tmuduo::net;
 
 namespace tmuduo

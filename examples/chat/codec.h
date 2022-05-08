@@ -6,6 +6,9 @@
 #include "tmuduo/net/Endian.h"
 #include "tmuduo/net/TcpConnection.h"
 
+
+using namespace tmuduo;
+
 class LengthHeaderCodec : noncopyable
 {
   public:

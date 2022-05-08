@@ -3,6 +3,7 @@
 #include "tmuduo/net/http/HttpContext.h"
 #include "tmuduo/net/Buffer.h"
 
+using namespace tmuduo;
 using std::string;
 using tmuduo::net::Buffer;
 using tmuduo::net::HttpContext;
@@ -17,9 +18,9 @@ TEST(HttpRequestTest, testParseRequestALlInOne)
         "\r\n");
   ASSERT_TRUE(context.parseRequest(&input, Timestamp::now()));
   ASSERT_TRUE(context.gotAll());
-  const HttpRequest& req = context.request();
-  EXPECT_EQ(req.method(), HttpRequest::kGet);
-  EXPECT_EQ(req.path(), string("/index.html"));
+  const HttpRequest& req = context.getRequest();
+  EXPECT_EQ(req.getMethod(), HttpRequest::kGet);
+  EXPECT_EQ(req.getPath(), string("/index.html"));
   EXPECT_EQ(req.getVersion(), HttpRequest::kHttp1_1);
   EXPECT_EQ(req.getHeader("Host"), string("www.baidu.com"));
   EXPECT_EQ(req.getHeader("User-Agent"), string(""));
@@ -43,9 +44,9 @@ TEST(HttpRequestTest, testParseRequestInTwoPieces)
     input.append(all.c_str() + sz1, sz2);
     ASSERT_TRUE(context.parseRequest(&input, Timestamp::now()));
     ASSERT_TRUE(context.gotAll());
-    const HttpRequest& request = context.request();
-    EXPECT_EQ(request.method(), HttpRequest::kGet);
-    EXPECT_EQ(request.path(), string("/index.html"));
+    const HttpRequest& request = context.getRequest();
+    EXPECT_EQ(request.getMethod(), HttpRequest::kGet);
+    EXPECT_EQ(request.getPath(), string("/index.html"));
     EXPECT_EQ(request.getVersion(), HttpRequest::kHttp1_1);
     EXPECT_EQ(request.getHeader("Host"), string("www.baidu.com"));
     EXPECT_EQ(request.getHeader("User-Agent"), string(""));
@@ -64,9 +65,9 @@ TEST(HttpRequestTest, testParseRequestEmptyHeaderValue)
 
   ASSERT_TRUE(context.parseRequest(&input, Timestamp::now()));
   ASSERT_TRUE(context.gotAll());
-  const HttpRequest& request = context.request();
-  EXPECT_EQ(request.method(), HttpRequest::kGet);
-  EXPECT_EQ(request.path(), string("/index.html"));
+  const HttpRequest& request = context.getRequest();
+  EXPECT_EQ(request.getMethod(), HttpRequest::kGet);
+  EXPECT_EQ(request.getPath(), string("/index.html"));
   EXPECT_EQ(request.getVersion(), HttpRequest::kHttp1_1);
   EXPECT_EQ(request.getHeader("Host"), string("www.baidu.com"));
   EXPECT_EQ(request.getHeader("User-Agent"), string(""));
