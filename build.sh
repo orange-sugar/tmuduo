@@ -8,7 +8,7 @@ BUILD_TYPE=$1
 shift
 # BUILD_TYPE=${BUILD_TYPE:-debug}
 INSTALL_DIR=${INSTALL_DIR:-./$BUILD_TYPE}
-CXX=${CXX:-g++}
+CXX=${CXX:-clang++}
 
 mkdir -p $BUILD_DIR/$BUILD_TYPE
 cd $BUILD_DIR/$BUILD_TYPE 

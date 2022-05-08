@@ -47,7 +47,7 @@ class SQLConnectionPool
     int freeNum_;
 
     std::mutex mutex_;
-    std::condition_variable cond_;
+    // std::condition_variable cond_;
 
     std::list<MYSQL*> connections_;
 

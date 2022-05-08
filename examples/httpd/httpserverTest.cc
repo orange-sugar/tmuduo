@@ -19,6 +19,7 @@ extern char favicon[555];
 
 void onRequest(const HttpRequest& request, HttpResponse* response)
 {
+  LOG_INFO << "headers total " << request.headers().size();
   if (request.getMethod() == HttpRequest::kGet)
   {
     if (request.getPath() == "/")
@@ -28,20 +29,23 @@ void onRequest(const HttpRequest& request, HttpResponse* response)
       response->setContentType("text/html");
       response->addHeader("Server", "orange");
       std::string now = Timestamp::now().toFormattedString();
-      response->setBody(
-        R"(<! DOCTYPE HTML>
-          <html>
-            <head>
-              <title>jpg</title>
-              <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
-            </head>
-            
-            <body>
-              <center><img src="/favion.ico" width="64px" height="64px" />
-              </center>
-            </body>
-          </html>)"
-      );
+      FileUtil::ReadSmallFile rf("load.html");
+      int sz;
+      rf.readToBuffer(&sz);
+      response->setBody(std::string(rf.buffer(), sz));
+      // response->setBody(
+      //   R"(<! DOCTYPE HTML>
+      //     <html>
+      //       <head>
+      //         <title>jpg</title>
+      //         <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+      //       </head>     
+      //       <body>
+      //         <center><img src="/favion.ico" width="64px" height="64px" />
+      //         </center>
+      //       </body>
+      //     </html>)"
+      // );
     }
     else if (request.getPath() == "/favion.ico")
     {
@@ -62,6 +66,26 @@ void onRequest(const HttpRequest& request, HttpResponse* response)
       response->setCloseConnection(true);
     }
   }
+  else if (request.getMethod() == HttpRequest::kPost)
+  {
+    LOG_INFO << "request body: " << request.getBody();
+    response->setStatusCode(HttpResponse::k200Ok);
+    response->setStatusMessage("OK");
+    response->setContentType("text/html");
+    response->addHeader("Server", "orange");
+    std::string s1 = R"(<! DOCTYPE HTML>
+                        <html>
+                          <head>
+                            <title>response</title>
+                          </head>     
+                          <body>)";
+    s1 += request.getBody();
+    s1 += R"(   </body>
+        </html>)";
+    response->setBody(
+      s1
+    );
+  }
 }
 
 int main(int argc, char* argv[])
@@ -72,8 +96,9 @@ int main(int argc, char* argv[])
     // benchmark = true;
     Logger::setLogLevel(Logger::WARN);
   }
+  Logger::setLogLevel(Logger::INFO);
   EventLoop loop;
-  InetAddress listenAddr(6912);
+  InetAddress listenAddr(9981);
 
   HttpServer server(&loop, listenAddr, "MyHttpd", TcpServer::Option::kReusePort);
 

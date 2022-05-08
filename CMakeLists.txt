@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
+set (CMAKE_CXX_COMPILER "/usr/bin/clang++")
 
 project(tmuduo C CXX)
 
@@ -11,20 +12,21 @@ option(TMUDUO_BUILD_TESTS "Build tests" on)
 set(CXX_FLAGS
   -g
   -D_FILE_OFFSET_BITS=64
- -Wall
- -Wextra
- -Werror
- -Wconversion
- -Wno-unused-parameter
- -Wold-style-cast
- -Woverloaded-virtual
- -Wpointer-arith
- -Wshadow
- -Wwrite-strings
- -march=native
+  -Wall
+  -Wextra
+  -Werror
+  -Wconversion
+  -Wno-unused-parameter
+  -Wold-style-cast
+  -Woverloaded-virtual
+  -Wpointer-arith
+  -Wshadow
+  -Wwrite-strings
+  -march=native
  # -MMD
- -std=c++17
- -rdynamic
+  -std=c++17
+  -rdynamic
+  -fstandalone-debug
 )
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")

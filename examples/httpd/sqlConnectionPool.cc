@@ -80,5 +80,5 @@ MYSQL* SQLConnectionPool::getNextConn()
     return nullptr;
   }
 
-  cond_.wait()
+  // cond_.wait()
 }

@@ -1,5 +1,6 @@
 #include "tmuduo/net/http/HttpContext.h"
 
+#include "tmuduo/base/Logging.h"
 #include "tmuduo/net/Buffer.h"
 
 using namespace tmuduo;
@@ -92,8 +93,8 @@ bool HttpContext::parseRequest(Buffer* buf, Timestamp receiveTime)
         else  
         {
           // TODO set to kExpectBody
-          state_ = kGotAll;
-          hasMore = false;
+          state_ = kExpectBody;
+          // hasMore = false;
         }
         buf->retrieveUntil(crlf + 2);
       }
@@ -104,7 +105,11 @@ bool HttpContext::parseRequest(Buffer* buf, Timestamp receiveTime)
     }
     else if (state_ == kExpectBody)
     {
-
+      request_.setBody(buf->peek(), buf->peek() + buf->readableBytes());
+      // LOG_INFO << std::string(buf->peek(), buf->readableBytes()) + "\n";
+      buf->retrieveAll();
+      hasMore = false;
+      state_ = kGotAll;
     }
   }
   return ok;

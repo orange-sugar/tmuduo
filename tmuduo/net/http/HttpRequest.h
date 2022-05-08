@@ -134,6 +134,13 @@ class HttpRequest : public copyable
 
     const std::map<std::string, std::string>& headers() const
     { return headers_; }
+
+    void setBody(const char* start, const char* end)
+    {
+      body_ = std::string(start, end);
+    }
+
+    std::string getBody() const { return body_; }
     
     void swap(HttpRequest& rhs)
     {
@@ -143,6 +150,7 @@ class HttpRequest : public copyable
       query_.swap(rhs.query_);
       receiveTime_.swap(rhs.receiveTime_);
       headers_.swap(rhs.headers_);
+      body_.swap(rhs.body_);
     }
 
   private:
@@ -152,6 +160,7 @@ class HttpRequest : public copyable
     std::string query_;
     Timestamp receiveTime_;
     std::map<std::string, std::string> headers_;
+    std::string body_;
 
 };
 

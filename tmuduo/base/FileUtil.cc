@@ -115,6 +115,12 @@ int ReadSmallFile::readToBuffer(int* size)
   return err;
 }
 
+namespace tmuduo
+{
+
+namespace FileUtil
+{
+
 template int readFile(StringArg filename,
                                 int maxSize,
                                 std::string* content,
@@ -124,6 +130,10 @@ template int ReadSmallFile::readToString(int maxSize,
                                          std::string *content, 
                                          int64_t *, 
                                          int64_t *, int64_t *);
+
+} // namespace FileUtil
+
+} // namespace tmuduo
 
 
 AppendFile::AppendFile(StringArg filename)

@@ -1,4 +1,5 @@
 add_executable(httpserver httpserverTest.cc)
+# target_include_directories(../tmuduo/net ../tmuduo/base)
 target_link_libraries(httpserver tmuduo_net mysqlclient)
 
 # find_package(MYSQL)
