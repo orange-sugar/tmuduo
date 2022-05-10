@@ -26,6 +26,17 @@ class BoundedBlockingQueue : noncopyable
       : maxSize_(maxSize)
     {
     }
+    void put(const T&& x)
+    {
+      unique_lock<mutex> lock(mutex_);
+      while (queue_.size() == maxSize_)
+      {
+        notFull_.wait(lock);
+      }
+      assert(queue_.size() < maxSize_);
+      queue_.push_back(std::move(x));
+      notEmpty_.notify_one();
+    }
 
     void put(const T& x)
     {

@@ -30,7 +30,6 @@ class BlockingQueue : noncopyable
       notEmpty_.notify_one();
     }
 
-
     void put(T&& x)
     {
       lock_guard<mutex> lock(mutex_);
