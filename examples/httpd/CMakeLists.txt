@@ -1,6 +1,5 @@
-# add_executable(httpserver httpserverTest.cc)
-# # target_include_directories(../tmuduo/net ../tmuduo/base)
-# target_link_libraries(httpserver tmuduo_net mysqlclient)
+add_executable(httpserver httpServerTest2.cc sqlConnectionPool.cc)
+target_link_libraries(httpserver tmuduo_net mysqlclient)
 
 # find_package(MYSQL)
 # if (MYSQL_FOUND)
@@ -9,7 +8,6 @@
 #   target_link_libraries(httpserver ${MYSQL_LIB})
 # endif()
 
-add_executable(pooltest poolTest.cc sqlConnectionPool.cc)
-# target_include_directories(../tmuduo/net ../tmuduo/base)
-target_link_libraries(pooltest tmuduo_base tmuduo_net mysqlclient)
+# add_executable(pooltest poolTest.cc sqlConnectionPool.cc)
+# target_link_libraries(pooltest tmuduo_base tmuduo_net mysqlclient)
 

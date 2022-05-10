@@ -12,8 +12,6 @@
 using namespace tmuduo;
 using namespace tmuduo::net;
 
-class CGIPool : noncopyable {};
-
 struct userItem {
   std::string userid_;
   std::string username_;

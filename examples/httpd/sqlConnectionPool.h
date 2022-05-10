@@ -79,4 +79,6 @@ class ConnPoolWrapper
     SQLConnectionPool *pool_;
 };
 
+using SQLPool = Singleton<SQLConnectionPool>;
+
 #endif	// EXAMPLES_HTTPD_SQLCONNECTIONPOOL_H

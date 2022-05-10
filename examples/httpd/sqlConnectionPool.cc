@@ -16,13 +16,13 @@ SQLConnection::SQLConnection(std::string url,
     databaseName_(databaseName),
     conn_(nullptr)
 {
-  LOG_DEBUG << "ctor at [" << this << "]";
+  // LOG_DEBUG << "ctor at [" << this << "]";
   conn_ = mysql_init(conn_);
 }   
 
 SQLConnection::~SQLConnection()
 {
-  LOG_DEBUG << "dtor at [" << this << "]";
+  // LOG_DEBUG << "dtor at [" << this << "]";
   if (!conn_)
   {
     mysql_close(conn_);

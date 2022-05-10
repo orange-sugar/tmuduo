@@ -115,6 +115,11 @@ int ReadSmallFile::readToBuffer(int* size)
   return err;
 }
 
+void ReadSmallFile::clear()
+{
+  buf_[0] = '\0';
+}
+
 namespace tmuduo
 {
 
