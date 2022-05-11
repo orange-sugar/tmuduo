@@ -53,12 +53,13 @@ class WebSever
     std::string realFile_;
     FileType filetype_;
 
+    std::mutex mutex_;
     std::map<std::string, std::string> usersInfo_;
 };
 
 int main()
 {
-  Logger::setLogLevel(Logger::DEBUG);
+  // Logger::setLogLevel(Logger::DEBUG);
   EventLoop loop;
   InetAddress serverAddr(9981);
   WebSever server(&loop, serverAddr, "Orange Server", "root", 4);
@@ -125,27 +126,60 @@ void WebSever::onRequest(const HttpRequest &request, HttpResponse *response)
       std::string name = body.substr(5, andMark - 5);
       std::string password = body.substr(andMark+10, body.size() - andMark - 10);
       LOG_DEBUG << "parsed name: " << name << " pswd: " << password;
-      // 登陆
-      if (request.getPath() == "/2")
+      
+      // register
+      if (request.getPath() == "/3")
       {
-        for (const auto& e : usersInfo_)
+        if (!usersInfo_.count(name))
         {
-          printf("name: %s, password: %s\n", e.first.c_str(), e.second.c_str());
+          {
+            std::lock_guard lock(mutex_);
+            ConnPoolWrapper loop(sqlPool_.get());
+            auto conn = loop.getSQLConnection();
+            auto res = conn->query("INSERT INTO users(username, password) values ('"
+                        + name +"', '" + password + "');");
+            usersInfo_.emplace(name, password);
+
+            if (!res)
+            {
+              realFile_ += "/login.html";
+            }
+            else  
+            {
+              realFile_ += "/registerError.html";
+            }
+          }
         }
+        else  
+        {
+          realFile_ += "/registerError.html";
+        }
+      }
+      // log in
+      else if (request.getPath() == "/2")
+      {
+        // for (const auto& e : usersInfo_)
+        // {
+        //   printf("name: %s, password: %s\n", e.first.c_str(), e.second.c_str());
+        // }
         if (usersInfo_.find(name) != usersInfo_.end() && usersInfo_[name] == password)
         {
           realFile_ += "/welcome.html";
-          LOG_DEBUG << "realfile: " << realFile_;
-          FileUtil::ReadSmallFile rsf(realFile_);
-          int fileSize;
-          rsf.readToBuffer(&fileSize);
-          response->setStatusCode(HttpResponse::k200Ok);
-          response->setStatusMessage("OK");
-          response->setContentType("text/html");
-          response->addHeader("Server", "orange");
-          response->setBody(std::string(rsf.buffer(), fileSize));
+        }
+        else  
+        {
+          realFile_ += "/loginError.html";
         }
       }
+      LOG_DEBUG << "realfile: " << realFile_;
+      FileUtil::ReadSmallFile rsf(realFile_);
+      int fileSize;
+      rsf.readToBuffer(&fileSize);
+      response->setStatusCode(HttpResponse::k200Ok);
+      response->setStatusMessage("OK");
+      response->setContentType("text/html");
+      response->addHeader("Server", "orange");
+      response->setBody(std::string(rsf.buffer(), fileSize));
       // ConnPoolWrapper pool(sqlPool_.get());
       // auto conn = pool.getSQLConnection();
     }
@@ -177,13 +211,13 @@ void WebSever::initUserInfo()
 {
   ConnPoolWrapper pool(sqlPool_.get());
   auto conn = pool.getSQLConnection();
-  auto res = conn->query("SELECT * FROM users.users;");
+  auto res = conn->query("SELECT * FROM users;");
   // int numFields = mysql_num_fields(res);
   // MYSQL_FIELD *fields = mysql_fetch_fields(res);
   while (MYSQL_ROW row = mysql_fetch_row(res))
-    {
-        std::string temp1(row[1]);
-        std::string temp2(row[2]);
-        usersInfo_[temp1] = temp2;
-    }
+  {
+      std::string temp1(row[1]);
+      std::string temp2(row[2]);
+      usersInfo_[temp1] = temp2;
+  }
 }
