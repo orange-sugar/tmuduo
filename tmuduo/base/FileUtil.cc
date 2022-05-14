@@ -120,25 +120,15 @@ void ReadSmallFile::clear()
   buf_[0] = '\0';
 }
 
-namespace tmuduo
-{
-
-namespace FileUtil
-{
-
-template int readFile(StringArg filename,
+template int FileUtil::readFile(StringArg filename,
                                 int maxSize,
                                 std::string* content,
                                 int64_t*, int64_t*, int64_t*);
 
-template int ReadSmallFile::readToString(int maxSize, 
-                                         std::string *content, 
-                                         int64_t *, 
-                                         int64_t *, int64_t *);
-
-} // namespace FileUtil
-
-} // namespace tmuduo
+template int FileUtil::ReadSmallFile::readToString(
+    int maxSize,
+    std::string* content,
+    int64_t*, int64_t*, int64_t*);
 
 
 AppendFile::AppendFile(StringArg filename)

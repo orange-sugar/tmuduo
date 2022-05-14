@@ -9,9 +9,7 @@
 
 namespace tmuduo
 {
-namespace FileUtil {
 class AppendFile;
-} // namespace FileUtil
 
 class LogFile : noncopyable
 {

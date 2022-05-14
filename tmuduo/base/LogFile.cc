@@ -1,11 +1,12 @@
 #include "tmuduo/base/LogFile.h"
 
-#include "tmuduo/base/FileUtil.h"
-#include "tmuduo/base/ProcessInfo.h"
-
 #include <assert.h>
 #include <cstdio>
 #include <ctime>
+
+#include "tmuduo/base/FileUtil.h"
+#include "tmuduo/base/ProcessInfo.h"
+
 using namespace tmuduo;
 
 LogFile::LogFile(const std::string& basename,
@@ -110,7 +111,8 @@ std::string LogFile::getLogFileName(const std::string& basename, time_t* now)
   char timebuf[32];
   struct tm tm;
   *now = time(NULL);
-  gmtime_r(now, &tm); // FIXME: localtime_r ?
+  localtime_r(now, &tm);
+  // gmtime_r(now, &tm); 
   strftime(timebuf, sizeof timebuf, ".%Y%m%d-%H%M%S.", &tm);
   filename += timebuf;
 

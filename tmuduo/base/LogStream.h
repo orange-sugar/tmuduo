@@ -2,7 +2,6 @@
 #define LOGSTREAM_H
 
 #include "tmuduo/base/noncopyable.h"
-// #include "tmuduo/base/StringPiece.h"
 #include "tmuduo/base/Types.h"
 #include <assert.h>
 #include <string.h>

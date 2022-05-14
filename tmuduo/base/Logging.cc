@@ -108,7 +108,21 @@ Logger::Impl::Impl(LogLevel level, int savedErrno, const SourceFile& file, int l
 void Logger::Impl::formatTime()
 {
   // TODO 一秒内只刷新微妙数
-  stream_ << time_.toFormattedString() << " ";
+  int64_t microSecondsSinceEpoch = time_.microSecondsSinceEpoch();
+  time_t seconds = static_cast<time_t>(microSecondsSinceEpoch / Timestamp::kMicroSecondsPerSecond);
+  int microseconds = static_cast<int>(microSecondsSinceEpoch % Timestamp::kMicroSecondsPerSecond);
+  if (seconds != t_lastSecond)
+  {
+    t_lastSecond = seconds;
+    struct tm tm_time;
+    ::localtime_r(&seconds, &tm_time);
+    int len = snprintf(t_time, sizeof(t_time), "%4d%02d%02d %02d:%02d:%02d",
+        tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday,
+        tm_time.tm_hour, tm_time.tm_min, tm_time.tm_sec);
+    assert(len == 17); (void)len;
+  }
+
+  stream_ << T(t_time, 17) << T(Fmt(".%06d ", microseconds).data(), 8);
 }
 
 void Logger::Impl::finish()

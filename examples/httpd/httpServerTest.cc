@@ -1,5 +1,6 @@
 #include <memory>
 
+#include "tmuduo/base/AsyncLogging.h"
 #include "tmuduo/base/FileUtil.h"
 #include "tmuduo/base/Logging.h"
 #include "tmuduo/net/EventLoop.h"
@@ -7,19 +8,25 @@
 #include "tmuduo/net/http/HttpRequest.h"
 #include "tmuduo/net/http/HttpResponse.h"
 #include "tmuduo/net/http/HttpServer.h"
-
-#include "sqlConnectionPool.h"
+#include "tmuduo/net/sql/sqlConnectionPool.h"
 
 #include <mysql/mysql.h>
 
 using namespace tmuduo;
 using namespace tmuduo::net;
 
-class WebSever
+AsyncLogging* g_asynclog = nullptr;
+
+void output(const char* line, int len)
+{
+  g_asynclog->append(line, len);
+}
+
+class WebServer
 {
   public:
     enum FileType {kUnkown, kHtml, kImage};
-    WebSever(EventLoop* loop, 
+    WebServer(EventLoop* loop, 
              const InetAddress& serverAddr,
              const std::string& nameArg,
              std::string docRoot,
@@ -39,7 +46,9 @@ class WebSever
 
     void setThreadNum(int numThreads) { server_.setThreadNum(numThreads); }
 
-    void start() { server_.start(); }    
+    void start() { server_.start(); } 
+
+    std::string filetypeToString(FileType ft);   
 
   private:
     void onRequest(const HttpRequest &request, HttpResponse *response);
@@ -59,16 +68,21 @@ class WebSever
 
 int main()
 {
-  // Logger::setLogLevel(Logger::DEBUG);
+  Logger::setLogLevel(Logger::DEBUG);
+  AsyncLogging log("httpserver", 400*1000*1000);
+  g_asynclog = &log;
+  Logger::setOutPut(output);
+  log.start();
+  
   EventLoop loop;
   InetAddress serverAddr(9981);
-  WebSever server(&loop, serverAddr, "Orange Server", "root", 4);
+  WebServer server(&loop, serverAddr, "Orange Server", "root", 4);
   server.setThreadNum(0);
   server.start();
   loop.loop();
 }
 
-void WebSever::onRequest(const HttpRequest &request, HttpResponse *response)
+void WebServer::onRequest(const HttpRequest &request, HttpResponse *response)
 {
   realFile_ = docRoot_;
   if (request.getMethod() == HttpRequest::kGet)
@@ -90,6 +104,7 @@ void WebSever::onRequest(const HttpRequest &request, HttpResponse *response)
       response->setStatusCode(HttpResponse::k404NotFound);
       response->setStatusMessage("Not Found");
       response->setCloseConnection(true);
+      return;
     }
 
     if (filetype_ != kUnkown)
@@ -202,12 +217,11 @@ void WebSever::onRequest(const HttpRequest &request, HttpResponse *response)
       response->setContentType("text/html");
       response->addHeader("Server", "orange");
       response->setBody(std::string(rsf.buffer(), fileSize));
-    }
-       
+    }  
   }
 }
 
-void WebSever::initUserInfo()
+void WebServer::initUserInfo()
 {
   ConnPoolWrapper pool(sqlPool_.get());
   auto conn = pool.getSQLConnection();

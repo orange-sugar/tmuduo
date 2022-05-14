@@ -1,10 +1,12 @@
-#ifndef ASYNCLOGGING_H
-#define ASYNCLOGGING_H
+#ifndef TMUDUO_BASE_ASYNCLOGGING_H
+#define TMUDUO_BASE_ASYNCLOGGING_H
 
 #include "tmuduo/base/BlockingQueue.h"
 #include "tmuduo/base/BoundedBlockingQueue.h"
 #include "tmuduo/base/CountDownLatch.h"
 #include "tmuduo/base/LogStream.h"
+
+#include "tmuduo/base/Logging.h"
 
 #include <mutex>
 #include <thread>
@@ -12,10 +14,6 @@
 #include <vector>
 #include <memory>
 #include <functional>
-
-using std::mutex;
-using std::unique_ptr;
-using std::thread;
 
 namespace tmuduo
 {
@@ -37,35 +35,44 @@ class AsyncLogging : noncopyable
     void start()
     {
       running_ = true;
-      thread_ = unique_ptr<thread>(
-        new thread(std::bind(&AsyncLogging::threadFunc, this))
-      );
+      // thread_ = std::unique_ptr<std::thread>(
+      //   new std::thread(std::bind(&AsyncLogging::threadFunc, this))
+      // );
+      thread_.reset(new std::thread(std::bind(&AsyncLogging::threadFunc, this)));
       latch_.wait();
     }
 
     void stop()
     {
-      running_ = false;
-      cond_.notify_one();
-      thread_->join();
+      if (running_)
+      {
+        running_ = false;
+        cond_.notify_one();
+        // LOG_DEBUG << " " << thread_->joinable();
+        if (thread_->joinable())
+        {
+          // LOG_DEBUG << " ";
+          thread_->join();
+        }
+      }
     }
 
   private:
     void threadFunc();
 
     using Buffer = detail::FixedBuffer<detail::kLargeBuffer>;
-    using BufferVector = std::vector<unique_ptr<Buffer>>;
+    using BufferVector = std::vector<std::unique_ptr<Buffer>>;
     using BufferPtr = BufferVector::value_type;
     
     const int flushInterval_;
     std::atomic<bool> running_;
     const std::string basename_;
     const off_t rollSize_;
-    unique_ptr<thread> thread_;
-    // std::function<void()> threadfunc_;
+    std::unique_ptr<std::thread> thread_;
+    
     CountDownLatch latch_;
-    mutex mutex_;
-    condition_variable cond_;
+    std::mutex mutex_;
+    std::condition_variable cond_;
     BufferPtr currentBuffer_;
     BufferPtr nextBuffer_;
     BufferVector buffers_;
@@ -74,4 +81,4 @@ class AsyncLogging : noncopyable
 
 } // namespace tmuduo
 
-#endif
+#endif	// TMUDUO_BASE_ASYNCLOGGING_H

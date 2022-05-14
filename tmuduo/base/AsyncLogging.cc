@@ -12,6 +12,7 @@ AsyncLogging::AsyncLogging(const std::string& basename,
                            off_t rollSize,
                            int flushInterval)
   : flushInterval_(flushInterval),
+    running_(false),
     basename_(basename),
     rollSize_(rollSize),
     thread_(nullptr),
@@ -69,7 +70,7 @@ void AsyncLogging::threadFunc()
       std::unique_lock<mutex> lock(mutex_);
       if (buffers_.empty())
       {
-        cond_.wait_for(lock, flushInterval_*1000ms);
+        cond_.wait_for(lock, flushInterval_*100ms);
       }
       buffers_.push_back(std::move(currentBuffer_));
       currentBuffer_ = std::move(newBuffer1);

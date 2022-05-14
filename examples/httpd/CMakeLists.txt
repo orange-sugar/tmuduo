@@ -1,5 +1,5 @@
-add_executable(httpserver httpServerTest2.cc sqlConnectionPool.cc)
-target_link_libraries(httpserver tmuduo_net mysqlclient)
+add_executable(webserver main.cc WebServer.cc)
+target_link_libraries(webserver tmuduo_net mysqlclient)
 
 # find_package(MYSQL)
 # if (MYSQL_FOUND)
