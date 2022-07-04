@@ -9,7 +9,7 @@
 
 ## s04
 [2022.04.15]实现EventLoop::runInLoop(), 可以跨线程调度任务。
-[2022.04.16]修改TimerQueue::addTimer、TimerQueue::addTimerInLoop, ~~解决unique_ptr传递问题。~~
+[2022.04.16]修改TimerQueue::addTimer、TimerQueue::addTimerInLoop。
 
 ## s05
 [2022.04.17]封装EventLoopThread类，同时修复了TimerQueue::addTimer()中lambda表达式的传值问题。
