@@ -71,7 +71,7 @@ void TcpConnection::send(const void* message, size_t len)
     }
     else  
     {
-      std::string_view data(static_cast<const char*>(message), len);
+      std::string data(static_cast<const char*>(message), len);
       loop_->runInLoop(
         [&] {
           sendInLoop(data);
@@ -80,7 +80,7 @@ void TcpConnection::send(const void* message, size_t len)
   }
 }
 
-void TcpConnection::send(const std::string_view& message)
+void TcpConnection::send(std::string&& message)
 {
   if (state_ == StateE::kConnected)
   {
@@ -91,8 +91,8 @@ void TcpConnection::send(const std::string_view& message)
     else  
     {
       loop_->runInLoop(
-        [&] { sendInLoop(message); }
-      );}
+        [&, _message = std::move(message)]() mutable { sendInLoop(std::string(_message)); });
+    }
   }
 }
 
@@ -109,14 +109,16 @@ void TcpConnection::send(Buffer&& message)
     {
       loop_->runInLoop(
         [&, _message = std::move(message)] () mutable { sendInLoop(_message.retrieveAllAsString()); }
-      );}
+      );
+    }
   }
 }
 
-void TcpConnection::sendInLoop(const std::string_view& message)
+void TcpConnection::sendInLoop(const std::string& message)
 {
   sendInLoop(message.data(), message.size());
 }
+
 void TcpConnection::sendInLoop(const void* message, size_t len)
 {
   loop_->assertInLoopThread();
@@ -125,11 +127,14 @@ void TcpConnection::sendInLoop(const void* message, size_t len)
   bool error = false;
   if(state_ == StateE::kDisconnected)
   {
-    LOG_WARN << "disconnected, give uo writing";
+    LOG_WARN << "disconnected, give up writing";
+    return;
   }
+
   // channel未关注可写事件/缓冲区没有数据
   if (!channel_->isWriting() && outputBuffer_.readableBytes() == 0)
   {
+    LOG_TRACE << "not writing and buffer empty";
     nwrote = sockets::write(channel_->fd(), message, len);
     if (nwrote >= 0)
     {
@@ -169,6 +174,7 @@ void TcpConnection::sendInLoop(const void* message, size_t len)
         std::bind(highWaterMarkCallback_, shared_from_this(), oldLen+remaining)
       );
     }
+
     outputBuffer_.append(static_cast<const char*>(message), remaining);
     if (!channel_->isWriting())
     {

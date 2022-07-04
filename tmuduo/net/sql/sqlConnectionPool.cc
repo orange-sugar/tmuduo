@@ -16,12 +16,14 @@ SQLConnectionPool::~SQLConnectionPool()
   destroy();
 }
 
-void SQLConnectionPool::init(int maxNum,
-                             std::string url,
+void SQLConnectionPool::init(std::string url,
                              std::string username,
                              std::string password,
-                             std::string databaseName)
+                             std::string databaseName,
+                             int maxNum)
 {
+  // LOG_DEBUG << CurrentThread::stackTrace(true);
+  // LOG_DEBUG << "maxNum: " << maxNum;
   for (int i = 0; i < maxNum; ++i)
   {
     SQLConnection* conn = new SQLConnection(url, username, password, databaseName);
@@ -31,6 +33,7 @@ void SQLConnectionPool::init(int maxNum,
     }
   }
   establishedNum_ = static_cast<int>(connections_.size());
+  // assert(establishedNum_ == maxNum);
   maxNum_ = maxNum;  
 }
 

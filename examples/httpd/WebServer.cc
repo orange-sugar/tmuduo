@@ -17,7 +17,7 @@ WebServer::WebServer(EventLoop* loop,
     sqlPool_(&SQLPool::getInstance()),
     filetype_(kUnkown)
 {
-  sqlPool_->init(maxSQLConn, "localhost", "testuser", "testuser", "users");
+  sqlPool_->init("localhost", "testuser", "testuser", "users", maxSQLConn);
   server_.setHttpCallback(
     [&](const HttpRequest &request, HttpResponse *response) 
     {onRequest(request, response);});

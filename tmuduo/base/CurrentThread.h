@@ -54,6 +54,8 @@ namespace CurrentThread
 
   std::string stackTrace(bool demangle);
 
+  // std::string myStackTrace(bool demangle);
+
 } // namespace CurrentThread
 } // namespace tmuduo
 

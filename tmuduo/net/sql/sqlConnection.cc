@@ -16,7 +16,7 @@ SQLConnection::SQLConnection(std::string url,
     databaseName_(databaseName),
     conn_(nullptr)
 {
-  // LOG_DEBUG << "ctor at [" << this << "]";
+  LOG_DEBUG << "ctor at [" << this << "]";
   conn_ = mysql_init(conn_);
 }   
 
@@ -32,13 +32,20 @@ SQLConnection::~SQLConnection()
 bool SQLConnection::connect()
 {
   conn_ = mysql_real_connect(conn_,
-                              url_.c_str(),
-                              username_.c_str(),
-                            password_.c_str(),
-                               databaseName_.c_str(),
-                            3306,
-                            nullptr, 0);
-  return conn_ != nullptr;
+                             url_.c_str(),
+                             username_.c_str(),
+                             password_.c_str(),
+                             databaseName_.c_str(),
+                             3306,
+                             nullptr, 0);
+  if (conn_ == nullptr)
+  {
+    // LOG_TRACE;
+    LOG_ERROR << url_ << username_ << password_ << databaseName_;
+    LOG_ERROR << "connect";
+    return false;
+  }
+  return true;
   
 }
 

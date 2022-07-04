@@ -1,5 +1,6 @@
 #include "tmuduo/net/poller/EPollPoller.h"
 
+#include <errno.h>
 #include <sys/epoll.h>
 
 #include "tmuduo/net/Channel.h"
@@ -37,6 +38,7 @@ Timestamp EPollPoller::poll(int timeoutMs, ChannelList* activeChannels)
                                events_.data(),
                                static_cast<int>(events_.size()),
                                timeoutMs);
+  int savedErrno = errno;
   Timestamp now(Timestamp::now());
   if (numEvents > 0)
   {
@@ -54,7 +56,11 @@ Timestamp EPollPoller::poll(int timeoutMs, ChannelList* activeChannels)
   }
   else  
   {
-    LOG_SYSERR << "EPollPoller::poll()";
+    if (savedErrno != EINTR)
+    {
+      errno = savedErrno;
+      LOG_SYSERR << "EPollPoller::poll()";
+    }
   }
   return now;
 }

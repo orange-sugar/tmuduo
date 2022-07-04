@@ -1,6 +1,7 @@
 #include "tmuduo/net/EventLoopThread.h"
 
 #include "tmuduo/net/EventLoop.h"
+#include "tmuduo/base/Logging.h"
 
 using namespace tmuduo;
 using namespace tmuduo::net;
@@ -24,6 +25,7 @@ EventLoopThread::~EventLoopThread()
 
 EventLoop* EventLoopThread::startLoop()
 {
+  LOG_DEBUG;
   thread_ = std::make_unique<std::thread>(
     std::bind(&EventLoopThread::threadFunc, this));
   {

@@ -43,7 +43,8 @@ EventLoop::EventLoop()
     poller_(Poller::newDefaultPoller(this)),
     timerQueue_(new TimerQueue(this)),
     wakeupFd_(createEventfd()),
-    wakeupChannel_(new Channel(this, wakeupFd_))
+    wakeupChannel_(new Channel(this, wakeupFd_)),
+    currentActiveChannel_(nullptr)
 {
   LOG_DEBUG << "EventLoop created at [" << this
             << "] in thread " << threadId_;
@@ -57,13 +58,15 @@ EventLoop::EventLoop()
     t_loopInThisThread = this;
   }
   wakeupChannel_->setReadCallback(
-    std::bind(&EventLoop::readWakeupFd, this)
+    std::bind(&EventLoop::handleRead, this)
   );
   wakeupChannel_->enableReading();
 }
 
 EventLoop::~EventLoop()
 {
+  LOG_DEBUG << "EventLoop " << this << " of thread " << threadId_
+            << " destructs in thread " << CurrentThread::tid();
   wakeupChannel_->disableAll();
   wakeupChannel_->remove();
   ::close(wakeupFd_);
@@ -87,14 +90,14 @@ void EventLoop::loop()
     {
       printActiveChannels();
     }
-    eventHandling_ = (true);
+    eventHandling_ = true;
     for (const auto channel : activeChannels_)
     {
       currentActiveChannel_ = channel;
-      channel->handleEvent(pollReturnTime_);
+      currentActiveChannel_->handleEvent(pollReturnTime_);
     }
     currentActiveChannel_ = nullptr;
-    eventHandling_ = (false);
+    eventHandling_ = false;
     doPendingFunctors();
   }
   
@@ -126,7 +129,7 @@ void EventLoop::runInLoop(Functor cb)
 void EventLoop::queueInLoop(Functor cb)
 {
   {
-    std::scoped_lock<std::mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(mutex_);
     pendingFunctors_.push_back(std::move(cb));
   }
   if (!isInLoopThread() || callingPendingFunctors_)
@@ -145,13 +148,13 @@ void EventLoop::wakeup()
   }
 }
 
-void EventLoop::readWakeupFd()
+void EventLoop::handleRead()
 {
   uint64_t one = 1;
   ssize_t n = ::read(wakeupFd_, &one, sizeof(one));
   if (n != sizeof(one))
   {
-    LOG_ERROR << "EventLoop::wakeup() writes " << n << " bytes instead of 8";
+    LOG_ERROR << "EventLoop::handleRead() writes " << n << " bytes instead of 8";
   }
 }
 
@@ -162,7 +165,7 @@ void EventLoop::doPendingFunctors()
   callingPendingFunctors_ = (true);
 
   {
-    std::scoped_lock<std::mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(mutex_);
     functors.swap(pendingFunctors_);
   }
 // LOG_TRACE << functors.size();
@@ -171,7 +174,7 @@ void EventLoop::doPendingFunctors()
     functor();
   }
 
-  callingPendingFunctors_ = (false);
+  callingPendingFunctors_ = false;
 }
 
 void EventLoop::updateChannel(Channel* channel)
@@ -201,11 +204,12 @@ void EventLoop::abortNotInLoopThread()
             << ", current thread id = " <<  CurrentThread::tid();
 }
 
+
+// 定时任务相关
 TimerId EventLoop::runAt(Timestamp time, TimerCallback cb)
 {
   return timerQueue_->addTimer(std::move(cb), std::move(time), 0);
 }
-
 TimerId EventLoop::runAfter(double delay, TimerCallback cb)
 {
   // LOG_INFO << cb.target_type().name();
@@ -213,18 +217,17 @@ TimerId EventLoop::runAfter(double delay, TimerCallback cb)
     addTime(Timestamp::now(), delay), std::move(cb)
   );
 }
-
 TimerId EventLoop::runEvery(double interval, TimerCallback cb)
 {
   return timerQueue_->addTimer(std::move(cb),
                                addTime(Timestamp::now(), interval), 
                                interval);
 }
-
 void EventLoop::cancel(TimerId TimerId)
 {
   timerQueue_->cancel(TimerId);
 }
+
 
 void EventLoop::printActiveChannels() const
 {

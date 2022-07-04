@@ -20,11 +20,11 @@ class SQLConnectionPool
     SQLConnectionPool();
     ~SQLConnectionPool();
 
-    void init(int maxNum,
-              std::string url,
+    void init(std::string url,
               std::string username,
               std::string password,
-              std::string databaseName);
+              std::string databaseName,
+              int maxNum);
 
     SQLConnection* takeConnection();
     bool putConnection(SQLConnection*);
@@ -40,7 +40,8 @@ class SQLConnectionPool
 class ConnPoolWrapper
 {
   public:
-    ConnPoolWrapper(SQLConnectionPool *connPool);
+    ConnPoolWrapper(SQLConnectionPool* connPool);
+    // ConnPoolWrapper(SQLConnectionPool *connPool);
     ~ConnPoolWrapper();
 
     SQLConnection* getSQLConnection() { return conn_; }

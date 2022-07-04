@@ -63,7 +63,7 @@ class EventLoop : noncopyable
     using ChannelList = std::vector<Channel*>;
     void abortNotInLoopThread();
 
-    void readWakeupFd(); // wake up
+    void handleRead(); // wake up
     void doPendingFunctors();
 
     //debug
@@ -82,10 +82,12 @@ class EventLoop : noncopyable
     std::unique_ptr<TimerQueue> timerQueue_;
     int wakeupFd_; // IO线程外唤醒用
     ChannelList activeChannels_;
-    // remove用
-    Channel* currentActiveChannel_;
+    
     // IO线程外唤醒用
     std::unique_ptr<Channel> wakeupChannel_;
+    // remove用
+    Channel* currentActiveChannel_;
+
     std::mutex mutex_;
     std::vector<Functor> pendingFunctors_;
 };

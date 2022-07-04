@@ -14,7 +14,7 @@ namespace tmuduo
 namespace net
 {
 
-class Buffer : copyable
+class Buffer : public copyable
 {
   public:
     static const size_t kCheapPrepend = 8;

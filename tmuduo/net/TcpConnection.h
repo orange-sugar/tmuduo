@@ -42,7 +42,7 @@ class TcpConnection : noncopyable,
     bool connected() const { return state_ == StateE::kConnected; }
 
     void send(const void* message, size_t len);
-    void send(const std::string_view& message);
+    void send(std::string&& message);
     void send(Buffer&& message);
 
     void shutdown();
@@ -83,7 +83,7 @@ class TcpConnection : noncopyable,
     void handleClose();
     void handleError();
 
-    void sendInLoop(const std::string_view& message);
+    void sendInLoop(const std::string& message);
     void sendInLoop(const void* message, size_t len);
     void shutdownInLoop();
     void forceCloseInLoop();

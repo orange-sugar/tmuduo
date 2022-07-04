@@ -1,9 +1,9 @@
-file(GLOB_RECURSE sql_SRCS *.cc)
+# file(GLOB_RECURSE sql_SRCS *.cc)
 
-add_library(tmuduo_net ${sql_SRCS})
-target_link_libraries(tmuduo_net mysqlclient)
+# add_library(tmuduo_sql ${sql_SRCS})
+# target_link_libraries(tmuduo_sql mysqlclient)
 
-install(TARGETS tmuduo_http DESTINATION lib)
+# install(TARGETS tmuduo_sql DESTINATION lib)
 set(HEADERS
   sqlConnection.h
   sqlConnectionPool.h 

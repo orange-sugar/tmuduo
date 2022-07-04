@@ -19,8 +19,13 @@ class EPollPoller : public Poller
     EPollPoller(EventLoop* loop);
     ~EPollPoller();
 
+    // 调用epoll接口，更新各个channel的revent
     virtual  Timestamp poll(int timeoutMs, ChannelList* activeChannels) override;
+
+    // 添加/修改channel对应的fd
     virtual void updateChannel(Channel* channel) override;
+
+    // 删除channel对应的fd
     virtual void removeChannel(Channel* channel) override;
 
   private:

@@ -18,9 +18,12 @@ TcpServer::TcpServer(EventLoop* loop,
     name_(nameArg),
     acceptor_(new Acceptor(loop, listenAddr, option == Option::kReusePort)),
     threadPool_(new EventLoopThreadPool(loop)),
+    connectionCallback_(defaultConnectionCallback),
+    messageCallback_(defaultMessageCallback),
     started_(false),
     nextConnId_(1)
 {
+  LOG_DEBUG << "TcpServer created at [" << this << "]"; 
   acceptor_->setNewConnectionCallback(
     std::bind(&TcpServer::newConnection, this, _1, _2)
   );

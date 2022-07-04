@@ -11,10 +11,15 @@ file(GLOB_RECURSE net_srcs *.cc)
 #   # Logging.cc 
 # )
 
+# if (VERRBOSE_FLAG EQUAL ON)
+  message("net_srcs ${net_srcs}")
+# endif()
+
 add_library(tmuduo_net ${net_srcs})
-target_link_libraries(tmuduo_net tmuduo_base)
+target_link_libraries(tmuduo_net tmuduo_base mysqlclient)
 
 add_subdirectory(http)
+add_subdirectory(sql)
 
 install(TARGETS tmuduo_net DESTINATION lib)
 
@@ -31,5 +36,6 @@ set(HEADERS
   TcpConnection.h
   TcpServer.h
   TimerId.h
+  sql/sqlConnectionPool.h
   )
 install(FILES ${HEADERS} DESTINATION include/tmuduo/net)

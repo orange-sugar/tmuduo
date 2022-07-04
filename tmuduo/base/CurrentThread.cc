@@ -20,6 +20,82 @@ __thread const char* t_threadName = "unknown";
 
 static_assert(std::is_same<int, pid_t>::value, "pid should be int");
 
+// std::string myStackTrace(bool demangle)
+// { 
+//   std::string stack;
+//   const int max_frames = 200;
+//   void* addrList[max_frames];
+
+//   int addrLen = ::backtrace(addrList, sizeof(addrList)/sizeof(void*));
+
+//   if (addrLen == 0) return stack;
+
+//   char** symbolList = ::backtrace_symbols(addrList, addrLen);
+
+//   size_t funcNameSize = 256;
+//   char* funcName = static_cast<char*>(::malloc(funcNameSize));
+
+//   for (int i = 1; i < addrLen; ++i)
+//   {
+//     char* beginName = 0, *beginOffset = 0, *endOffset = 0;
+
+//     for (char* p = symbolList[i]; *p; ++p)
+//     {
+//       if (*p == '(')
+//       {
+//         beginName = p;
+//       }
+//       else if (*p == '+')
+//       {
+//         beginOffset = p;
+//       }
+//       else if (*p == ')')
+//       {
+//         endOffset = p;
+//         break;
+//       }
+//     }
+
+//     if (beginName && beginOffset && endOffset && beginName < beginOffset)
+//     {
+//       *beginName++ = '\0';
+//       *beginOffset++ = '\0';
+//       *endOffset++ = '\0';
+
+//       int status;
+//       char* ret = ::abi::__cxa_demangle(beginName, funcName, &funcNameSize, &status);
+//       if (status == 0)
+//       {
+//         funcName = ret;
+//         stack += "  ";
+//         stack.append(symbolList[i]);
+//         stack.append(" : ");
+//         stack.append(funcName);
+//         stack.append("+");
+//         stack.append(beginOffset);
+//         stack.append("\n");
+//       }
+//       else   
+//       {
+//         stack += "  ";
+//         stack.append(symbolList[i]);
+//         stack.append(" : ");
+//         stack.append(beginName);
+//         stack.append("+");
+//         stack.append(beginOffset);
+//         stack.append("\n");
+//       }
+//     }
+//     else  
+//     {
+//       stack.append("  ");
+//       stack.append(symbolList[i]);
+//       stack.append("\n");
+//     }
+//   }
+//   return stack;
+// }
+
 std::string stackTrace(bool demangle)
 {
   std::string stack;
@@ -31,10 +107,12 @@ std::string stackTrace(bool demangle)
   {
     size_t len = 256;
     char* demangled = demangle ? static_cast<char*>(::malloc(len)) : nullptr;
-    for (int i = 1; i < nptrs; ++i)
+    for (int i = 1; i < nptrs; ++i)  // skipping the 0-th, which is this function
     {
       if (demangle)
       {
+        // https://panthema.net/2008/0901-stacktrace-demangled/
+        // bin/exception_test(_ZN3Bar4testEv+0x79) [0x401909]
         char* left_par = nullptr;
         char* plus = nullptr;
         for (char* p = strings[i]; *p; ++p)
@@ -42,7 +120,7 @@ std::string stackTrace(bool demangle)
           if (*p == '(')
             left_par = p;
           else if (*p == '+')
-            plus =p;
+            plus = p;
         }
 
         if (left_par && plus)
@@ -53,7 +131,7 @@ std::string stackTrace(bool demangle)
           *plus = '+';
           if (status == 0)
           {
-            demangled = ret;
+            demangled = ret;  // ret could be realloc()
             stack.append(strings[i], left_par+1);
             stack.append(demangled);
             stack.append(plus);
@@ -62,6 +140,7 @@ std::string stackTrace(bool demangle)
           }
         }
       }
+      // Fallback to mangled names
       stack.append(strings[i]);
       stack.push_back('\n');
     }
