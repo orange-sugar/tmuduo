@@ -6,37 +6,34 @@
 class MYSQL;
 class MYSQL_RES;
 
-namespace tmuduo
-{
-namespace net
-{
+namespace tmuduo {
+namespace net {
 
-class SQLConnection
-{
-  public:
-    SQLConnection(std::string url,
-                  std::string username,
-                  std::string password,
-                  std::string databaseName);
-    ~SQLConnection();
+class SQLConnection {
+ public:
+  SQLConnection(std::string url, std::string username, std::string password,
+                std::string databaseName);
+  ~SQLConnection();
 
-    bool connect();
+  bool connect();
 
-    bool update(std::string sql);
+  bool update(std::string sql);
 
-    MYSQL_RES* query(std::string sql);
+  MYSQL_RES* query(std::string sql);
 
-    MYSQL* getConnection() { return conn_; } 
-  
-  private:
-    std::string url_;
-    std::string username_;
-    std::string password_;
-    std::string databaseName_;
-    MYSQL* conn_;
+  MYSQL* getConnection() {
+    return conn_;
+  }
+
+ private:
+  std::string url_;
+  std::string username_;
+  std::string password_;
+  std::string databaseName_;
+  MYSQL* conn_;
 };
 
-} // namespace net
-} // namespace tmuduo
+}  // namespace net
+}  // namespace tmuduo
 
-#endif	// TMUDUO_NET_SQL_SQLCONNECTION_H
+#endif  // TMUDUO_NET_SQL_SQLCONNECTION_H

@@ -1,26 +1,22 @@
-#include "tmuduo/net/EventLoop.h"
-#include "tmuduo/base/Logging.h"
-
-#include <thread>
 #include <cstdio>
+#include <thread>
+#include "tmuduo/base/Logging.h"
+#include "tmuduo/net/EventLoop.h"
 
 using namespace tmuduo;
 using namespace tmuduo::net;
 
 EventLoop* g_loop;
 
-void print() 
-{
+void print() {
   printf("time out\n");
 }
 
-void threadFunc()
-{
+void threadFunc() {
   g_loop->runAfter(2, print);
 }
 
-int main()
-{
+int main() {
   EventLoop loop;
   g_loop = &loop;
   std::thread t(threadFunc);

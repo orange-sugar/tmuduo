@@ -4,8 +4,7 @@
 using namespace tmuduo;
 using namespace tmuduo::net;
 
-int main()
-{
+int main() {
   Logger::setLogLevel(Logger::DEBUG);
   EventLoop loop;
   loop.loop();

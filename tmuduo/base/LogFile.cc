@@ -1,83 +1,55 @@
 #include "tmuduo/base/LogFile.h"
-
 #include <assert.h>
 #include <cstdio>
 #include <ctime>
-
 #include "tmuduo/base/FileUtil.h"
 #include "tmuduo/base/ProcessInfo.h"
 
 using namespace tmuduo;
 
-LogFile::LogFile(const std::string& basename,
-                 off_t rollSize,
-                 bool threadSafe,
-                 int flushInterval,
+LogFile::LogFile(const std::string& basename, off_t rollSize, bool threadSafe, int flushInterval,
                  int checkEveryN)
-  : basename_(basename),
-    rollSize_(rollSize),
-    flushInterval_(flushInterval),
-    checkEveryN_(checkEveryN),
-    count_(0),
-    mutex_(threadSafe ? new std::mutex : nullptr),
-    startOfPeriod_(0),
-    lastRoll_(0),
-    lastFlush_(0)
-{
+    : basename_(basename), rollSize_(rollSize), flushInterval_(flushInterval),
+      checkEveryN_(checkEveryN), count_(0), mutex_(threadSafe ? new std::mutex : nullptr),
+      startOfPeriod_(0), lastRoll_(0), lastFlush_(0) {
   assert(basename.find('/') == std::string::npos);
   rollFile();
 }
 
 LogFile::~LogFile() = default;
 
-void LogFile::append(const char* logline, int len)
-{
-  if (mutex_)
-  {
+void LogFile::append(const char* logline, int len) {
+  if (mutex_) {
     std::lock_guard<std::mutex> lock(*mutex_);
     append_unlocked(logline, len);
-  }
-  else
-  {
+  } else {
     append_unlocked(logline, len);
   }
 }
 
-void LogFile::flush()
-{
-  if (mutex_)
-  {
+void LogFile::flush() {
+  if (mutex_) {
     std::lock_guard<std::mutex> lock(*mutex_);
     file_->flush();
-  }
-  else
-  {
+  } else {
     file_->flush();
   }
 }
 
-void LogFile::append_unlocked(const char* logline, int len)
-{
+void LogFile::append_unlocked(const char* logline, int len) {
   file_->append(logline, len);
 
-  if (file_->writtenBytes() > rollSize_)
-  {
+  if (file_->writtenBytes() > rollSize_) {
     rollFile();
-  }
-  else
-  {
+  } else {
     ++count_;
-    if (count_ >= checkEveryN_)
-    {
+    if (count_ >= checkEveryN_) {
       count_ = 0;
       time_t now = ::time(NULL);
       time_t thisPeriod_ = now / kRollPerSeconds_ * kRollPerSeconds_;
-      if (thisPeriod_ != startOfPeriod_)
-      {
+      if (thisPeriod_ != startOfPeriod_) {
         rollFile();
-      }
-      else if (now - lastFlush_ > flushInterval_)
-      {
+      } else if (now - lastFlush_ > flushInterval_) {
         lastFlush_ = now;
         file_->flush();
       }
@@ -85,14 +57,12 @@ void LogFile::append_unlocked(const char* logline, int len)
   }
 }
 
-bool LogFile::rollFile()
-{
+bool LogFile::rollFile() {
   time_t now = 0;
   std::string filename = getLogFileName(basename_, &now);
   time_t start = now / kRollPerSeconds_ * kRollPerSeconds_;
 
-  if (now > lastRoll_)
-  {
+  if (now > lastRoll_) {
     lastRoll_ = now;
     lastFlush_ = now;
     startOfPeriod_ = start;
@@ -102,8 +72,7 @@ bool LogFile::rollFile()
   return false;
 }
 
-std::string LogFile::getLogFileName(const std::string& basename, time_t* now)
-{
+std::string LogFile::getLogFileName(const std::string& basename, time_t* now) {
   std::string filename;
   filename.reserve(basename.size() + 64);
   filename = basename;
@@ -112,7 +81,7 @@ std::string LogFile::getLogFileName(const std::string& basename, time_t* now)
   struct tm tm;
   *now = time(NULL);
   localtime_r(now, &tm);
-  // gmtime_r(now, &tm); 
+  // gmtime_r(now, &tm);
   strftime(timebuf, sizeof timebuf, ".%Y%m%d-%H%M%S.", &tm);
   filename += timebuf;
 

@@ -1,11 +1,10 @@
+#include <sys/timerfd.h>
 #include <cstdio>
 #include <cstdlib>
-#include <sys/timerfd.h>
-
-#include "tmuduo/net/Poller.h"
-#include "tmuduo/net/EventLoop.h"
-#include "tmuduo/net/Channel.h"
 #include "tmuduo/base/Logging.h"
+#include "tmuduo/net/Channel.h"
+#include "tmuduo/net/EventLoop.h"
+#include "tmuduo/net/Poller.h"
 
 using namespace tmuduo;
 using namespace tmuduo::net;
@@ -13,17 +12,19 @@ using namespace tmuduo::net;
 EventLoop* g_loop;
 int timerfd;
 
-class setENV  
-{
-  public:
-    setENV() { ::setenv("TMUDUO_USE_POLL", "ON", 1); }
-    ~setENV(){ ::unsetenv("TMUDUO_USE_POLL"); }
+class setENV {
+ public:
+  setENV() {
+    ::setenv("TMUDUO_USE_POLL", "ON", 1);
+  }
+  ~setENV() {
+    ::unsetenv("TMUDUO_USE_POLL");
+  }
 };
 
 // setENV setUSEPOLL;
 
-void print()
-{
+void print() {
   printf("timeout! tid = %d\n", CurrentThread::tid());
   uint64_t howmany;
   ::read(timerfd, &howmany, sizeof(howmany));
@@ -32,8 +33,7 @@ void print()
 
 const char* ENV = "TMUDUO_USE_POLL";
 
-int main()
-{
+int main() {
   Logger::setLogLevel(Logger::TRACE);
   EventLoop loop;
   g_loop = &loop;

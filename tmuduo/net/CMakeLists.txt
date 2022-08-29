@@ -12,7 +12,7 @@ file(GLOB_RECURSE net_srcs *.cc)
 # )
 
 # if (VERRBOSE_FLAG EQUAL ON)
-  message("net_srcs ${net_srcs}")
+  # message("net_srcs ${net_srcs}")
 # endif()
 
 add_library(tmuduo_net ${net_srcs})

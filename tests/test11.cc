@@ -1,10 +1,8 @@
 #include <thread>
-
-#include "tmuduo/net/TcpClient.h"
-
 #include "tmuduo/base/Logging.h"
 #include "tmuduo/net/EventLoop.h"
 #include "tmuduo/net/InetAddress.h"
+#include "tmuduo/net/TcpClient.h"
 
 using namespace tmuduo;
 using namespace tmuduo::net;
@@ -17,8 +15,7 @@ using namespace tmuduo::net;
 //     TcpClient client_;
 // };
 
-void threadFunc(EventLoop* loop)
-{
+void threadFunc(EventLoop* loop) {
   InetAddress serverAddr("127.0.0.1", 6912);
   TcpClient client(loop, serverAddr, "OrangeClient");
   client.connect();
@@ -26,8 +23,7 @@ void threadFunc(EventLoop* loop)
   CurrentThread::sleepUSec(1000 * 1000);
 }
 
-int main()
-{
+int main() {
   Logger::setLogLevel(Logger::DEBUG);
 
   EventLoop loop;

@@ -4,68 +4,62 @@
 #include <assert.h>
 #include <pthread.h>
 #include <stdlib.h>
-
 #include "tmuduo/base/noncopyable.h"
 
-namespace tmuduo
-{
+namespace tmuduo {
 
-namespace detail
-{
+namespace detail {
 
-template<typename T>
-struct has_no_destroy
-{
-  template<typename C> static char test(decltype(&C::no_destroy));
-  template<typename C> static int32_t test(...);
+template <typename T>
+struct has_no_destroy {
+  template <typename C>
+  static char test(decltype(&C::no_destroy));
+  template <typename C>
+  static int32_t test(...);
   const static bool value = sizeof(test<T>(0)) == 1;
 };
 
-} // namespace detail
+}  // namespace detail
 
-template<typename T>
-class Singleton : noncopyable
-{
-  public:
-    Singleton() = delete;
-    ~Singleton() = delete;
-    
-    static T& getInstance()
-    {
-      pthread_once(&ponce_, &Singleton::init);
-      assert(value_ != nullptr);
-      return *value_;
+template <typename T>
+class Singleton : noncopyable {
+ public:
+  Singleton() = delete;
+  ~Singleton() = delete;
+
+  static T& getInstance() {
+    pthread_once(&ponce_, &Singleton::init);
+    assert(value_ != nullptr);
+    return *value_;
+  }
+
+ private:
+  static void init() {
+    value_ = new T();
+    if (!detail::has_no_destroy<T>::value) {
+      ::atexit(destroy);
     }
+  }
 
-  private:
-    static void init()
-    {
-      value_ = new T();
-      if (!detail::has_no_destroy<T>::value)
-      {
-        ::atexit(destroy);
-      }
-    }
+  static void destroy() {
+    typedef char T_must_be_complete_type[sizeof(T) == 0 ? -1 : 1];
+    T_must_be_complete_type dummy;
+    (void)dummy;
 
-    static void destroy()
-    {
-      typedef char T_must_be_complete_type[sizeof(T) == 0 ? -1 : 1];
-      T_must_be_complete_type dummy; (void) dummy;
+    delete value_;
+    value_ = nullptr;
+  }
 
-      delete value_;
-      value_ = nullptr;
-    }
-
-    static pthread_once_t ponce_;
-    static T* value_;
+  static pthread_once_t ponce_;
+  static T* value_;
 };
 
-template<typename T>
+template <typename T>
 pthread_once_t Singleton<T>::ponce_ = PTHREAD_ONCE_INIT;
 
-template<typename T>
+template <typename T>
 T* Singleton<T>::value_ = nullptr;
 
-} // namespace tmuduo
+}  // namespace tmuduo
 
-#endif	// TMUDUO_BASE_SINGLETON_H
+#endif  // TMUDUO_BASE_SINGLETON_H

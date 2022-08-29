@@ -1,8 +1,7 @@
 #include <atomic>
-#include <thread>
 #include <iostream>
 #include <mutex>
-
+#include <thread>
 #include "tmuduo/base/ThreadPool.h"
 #include "tmuduo/base/Timestamp.h"
 
@@ -11,27 +10,23 @@ using namespace tmuduo;
 // std::mutex mutex_;
 std::atomic<int> cnt = 0;
 
-void threadFunc(int numCouts)
-{
+void threadFunc(int numCouts) {
   // {
   //   std::lock_guard<std::mutex> lock(mutex_);
   //   for (int i = 0; i < numCouts; ++i)
-  //   {  
+  //   {
   //     ++cnt;
   //   }
   // }
-  for (int i = 0; i < numCouts; ++i)
-  {  
+  for (int i = 0; i < numCouts; ++i) {
     ++cnt;
   }
 }
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
   Timestamp start(Timestamp::now());
   ThreadPool pool(2);
-  for (int j = 0; j < 2; ++j)
-  {
+  for (int j = 0; j < 2; ++j) {
     pool.pushTask(std::bind(threadFunc, atoi(argv[1])));
   }
   pool.waitForTasks();

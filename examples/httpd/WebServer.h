@@ -2,7 +2,6 @@
 #define EXAMPLES_HTTPD_WEBSERVER_H
 
 #include <memory>
-
 #include "tmuduo/net/http/HttpContext.h"
 #include "tmuduo/net/http/HttpRequest.h"
 #include "tmuduo/net/http/HttpResponse.h"
@@ -12,38 +11,37 @@
 using namespace tmuduo;
 using namespace tmuduo::net;
 
-class WebServer
-{
-  public:
-    enum FileType {kUnkown, kHtml, kImage};
-    WebServer(EventLoop* loop, 
-             const InetAddress& serverAddr,
-             const std::string& nameArg,
-             std::string docRoot,
-             int maxSQLConn
-             );
+class WebServer {
+ public:
+  enum FileType { kUnkown, kHtml, kImage };
+  WebServer(EventLoop* loop, const InetAddress& serverAddr, const std::string& nameArg,
+            std::string docRoot, int maxSQLConn);
 
-    void setThreadNum(int numThreads) { server_.setThreadNum(numThreads); }
+  void setThreadNum(int numThreads) {
+    server_.setThreadNum(numThreads);
+  }
 
-    void start() { server_.start(); } 
+  void start() {
+    server_.start();
+  }
 
-    std::string filetypeToString(FileType ft);   
+  std::string filetypeToString(FileType ft);
 
-  private:
-    void onRequest(const HttpRequest &request, HttpResponse *response);
+ private:
+  void onRequest(const HttpRequest& request, HttpResponse* response);
 
-    void initUserInfo();
+  void initUserInfo();
 
-    std::string docRoot_;
-    HttpServer server_;
-    // ERROR std::unique_ptr<SQLConnectionPool> sqlPool_;
-    SQLConnectionPool* sqlPool_;
+  std::string docRoot_;
+  HttpServer server_;
+  // ERROR std::unique_ptr<SQLConnectionPool> sqlPool_;
+  SQLConnectionPool* sqlPool_;
 
-    std::string realFile_;
-    FileType filetype_;
+  std::string realFile_;
+  FileType filetype_;
 
-    std::mutex mutex_;
-    std::map<std::string, std::string> usersInfo_;
+  std::mutex mutex_;
+  std::map<std::string, std::string> usersInfo_;
 };
 
-#endif	// EXAMPLES_HTTPD_WEBSERVER_H
+#endif  // EXAMPLES_HTTPD_WEBSERVER_H

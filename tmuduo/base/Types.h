@@ -1,10 +1,10 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#include <memory>
-#include <limits>
 #include <stdint.h>
 #include <string.h>  // memset
+#include <limits>
+#include <memory>
 #include <string>
 
 #ifndef NDEBUG
@@ -15,11 +15,9 @@
 /// The most common stuffs.
 ///
 
-namespace tmuduo
-{
+namespace tmuduo {
 
-inline void memZero(void* p, size_t n)
-{
+inline void memZero(void* p, size_t n) {
   memset(p, 0, n);
 }
 
@@ -77,9 +75,8 @@ inline void memZero(void* p, size_t n)
 // implicit_cast would have been part of the C++ standard library,
 // but the proposal was submitted too late.  It will probably make
 // its way into the language in the future.
-template<typename To, typename From>
-inline To implicit_cast(From const &f)
-{
+template <typename To, typename From>
+inline To implicit_cast(From const& f) {
   return f;
 }
 
@@ -101,15 +98,14 @@ inline To implicit_cast(From const &f)
 //    if (dynamic_cast<Subclass2>(foo)) HandleASubclass2Object(foo);
 // You should design the code some other way not to need this.
 
-template<typename To, typename From>     // use like this: down_cast<T*>(foo);
-inline To down_cast(From* f)                     // so we only accept pointers
+template <typename To, typename From>  // use like this: down_cast<T*>(foo);
+inline To down_cast(From* f)           // so we only accept pointers
 {
   // Ensures that To is a sub-type of From *.  This test is here only
   // for compile-time type checking, and has no overhead in an
   // optimized build at run-time, as it will be optimized away
   // completely.
-  if (false)
-  {
+  if (false) {
     implicit_cast<From*, To>(0);
   }
 
@@ -120,38 +116,40 @@ inline To down_cast(From* f)                     // so we only accept pointers
 }
 
 // https://microeducate.tech/passing-a-non-copyable-closure-object-to-stdfunction-parameter-duplicate/
-template< class F >
-auto make_copyable_function( F&& f ) {
+template <class F>
+auto make_copyable_function(F&& f) {
   using dF = std::decay_t<F>;
-  auto spf = std::make_shared<dF>( std::forward<F>(f) );
-  return [spf](auto&&... args)->decltype(auto) {
-    return (*spf)( decltype(args)(args)... );
-  };
+  auto spf = std::make_shared<dF>(std::forward<F>(f));
+  return [spf](auto&&... args) -> decltype(auto) { return (*spf)(decltype(args)(args)...); };
 }
 
 // https://kenkyu-note.hatenablog.com/entry/2019/10/06/194822
 template <class Func>
-struct CopyableFunction
-{
-    CopyableFunction(Func f)
-      : func(std::move(f))
-    {}
-    CopyableFunction(const CopyableFunction&)
-      : func(ThrowException())
-    {}
-    CopyableFunction(CopyableFunction&&) = default;
-    Func ThrowException() { throw std::exception(); }
+struct CopyableFunction {
+  CopyableFunction(Func f) : func(std::move(f)) {
+  }
+  CopyableFunction(const CopyableFunction&) : func(ThrowException()) {
+  }
+  CopyableFunction(CopyableFunction&&) = default;
+  Func ThrowException() {
+    throw std::exception();
+  }
 
-    template <class ...Args>
-    decltype(auto) operator()(Args&& ...args) const { return func(std::forward<Args>(args)...); }
-    template <class ...Args>
-    decltype(auto) operator()(Args&& ...args) { return func(std::forward<Args>(args)...); }
-    Func func;
+  template <class... Args>
+  decltype(auto) operator()(Args&&... args) const {
+    return func(std::forward<Args>(args)...);
+  }
+  template <class... Args>
+  decltype(auto) operator()(Args&&... args) {
+    return func(std::forward<Args>(args)...);
+  }
+  Func func;
 };
 template <class Func>
-CopyableFunction<Func> MakeCopyableFunction(Func func) { return CopyableFunction<Func>(std::move(func)); }
+CopyableFunction<Func> MakeCopyableFunction(Func func) {
+  return CopyableFunction<Func>(std::move(func));
+}
 
-} // namespace tmuduo
+}  // namespace tmuduo
 
-
-#endif //  TYPES_H
+#endif  //  TYPES_H

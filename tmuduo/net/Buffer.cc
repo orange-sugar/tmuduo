@@ -1,8 +1,6 @@
 #include "tmuduo/net/Buffer.h"
-
 #include <errno.h>
 #include <sys/uio.h>
-
 #include "tmuduo/net/SockOps.h"
 
 using namespace tmuduo;
@@ -12,8 +10,7 @@ const char Buffer::kCRLF[] = "\r\n";
 const size_t Buffer::kCheapPrepend;
 const size_t Buffer::kInitialSize;
 
-ssize_t Buffer::readFd(int fd, int* savedErrno)
-{
+ssize_t Buffer::readFd(int fd, int* savedErrno) {
   char extrabuf[65536];
   struct iovec vec[2];
   const size_t writable = writableBytes();
@@ -26,16 +23,11 @@ ssize_t Buffer::readFd(int fd, int* savedErrno)
 
   const ssize_t n = sockets::readv(fd, vec, 2);
 
-  if (n < 0)
-  {
+  if (n < 0) {
     *savedErrno = errno;
-  }
-  else if (implicit_cast<size_t>(n) <= writable)	
-  {
+  } else if (implicit_cast<size_t>(n) <= writable) {
     writerIndex_ += n;
-  }
-  else	
-  {
+  } else {
     writerIndex_ = buffer_.size();
     append(extrabuf, n - writable);
   }

@@ -2,51 +2,44 @@
 #define TMUDUO_NET_POLLER_H
 
 #include <vector>
-
 #include "tmuduo/base/Timestamp.h"
 #include "tmuduo/net/EventLoop.h"
 
-namespace tmuduo 
-{
-namespace net 
-{
+namespace tmuduo {
+namespace net {
 
 class Channel;
 
-class Poller : noncopyable
-{
-  public:
-    using ChannelList = std::vector<Channel*>;
-    
-    Poller(EventLoop* loop);
-    virtual ~Poller();
+class Poller : noncopyable {
+ public:
+  using ChannelList = std::vector<Channel*>;
 
-    
-    /// 轮询IO事件
-    /// 需要在IO线程调用
-    virtual Timestamp poll(int timeoutMs, ChannelList* activeChannels) = 0;
+  Poller(EventLoop* loop);
+  virtual ~Poller();
 
-    /// 修改欲关注的IO事件 
-    /// 需要在IO线程调用
-    virtual void updateChannel(Channel* channel) = 0;
+  /// 轮询IO事件
+  /// 需要在IO线程调用
+  virtual Timestamp poll(int timeoutMs, ChannelList* activeChannels) = 0;
 
-    /// 删除channel 
-    /// 需要在IO线程调用
-    virtual void removeChannel(Channel* channel) = 0;
+  /// 修改欲关注的IO事件
+  /// 需要在IO线程调用
+  virtual void updateChannel(Channel* channel) = 0;
 
-    static Poller* newDefaultPoller(EventLoop* loop);
+  /// 删除channel
+  /// 需要在IO线程调用
+  virtual void removeChannel(Channel* channel) = 0;
 
-    void assertInLoopThread()
-    {
-      ownerLoop_->assertInLoopThread();
-    }
+  static Poller* newDefaultPoller(EventLoop* loop);
 
-  private:
-    EventLoop* ownerLoop_;
+  void assertInLoopThread() {
+    ownerLoop_->assertInLoopThread();
+  }
+
+ private:
+  EventLoop* ownerLoop_;
 };
 
-} //  namespace tmuduo::net
-} //  namespace tmuduo 
+}  // namespace net
+}  //  namespace tmuduo
 
-
-#endif	// TMUDUO_NET_POLLER_H
+#endif  // TMUDUO_NET_POLLER_H

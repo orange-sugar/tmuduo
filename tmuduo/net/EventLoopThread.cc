@@ -1,48 +1,36 @@
 #include "tmuduo/net/EventLoopThread.h"
-
-#include "tmuduo/net/EventLoop.h"
 #include "tmuduo/base/Logging.h"
+#include "tmuduo/net/EventLoop.h"
 
 using namespace tmuduo;
 using namespace tmuduo::net;
 
 EventLoopThread::EventLoopThread(ThreadInitCallback cb)
-  : loop_(nullptr),
-    exiting_(false),
-    thread_(nullptr),
-    mutex_(),
-    cond_(),
-    callback_(std::move(cb))
-{
+    : loop_(nullptr), exiting_(false), thread_(nullptr), mutex_(), cond_(),
+      callback_(std::move(cb)) {
 }
 
-EventLoopThread::~EventLoopThread()
-{
+EventLoopThread::~EventLoopThread() {
   exiting_ = true;
   loop_->quit();
   thread_->join();
 }
 
-EventLoop* EventLoopThread::startLoop()
-{
+EventLoop* EventLoopThread::startLoop() {
   LOG_DEBUG;
-  thread_ = std::make_unique<std::thread>(
-    std::bind(&EventLoopThread::threadFunc, this));
+  thread_ = std::make_unique<std::thread>(std::bind(&EventLoopThread::threadFunc, this));
   {
     std::unique_lock<std::mutex> lock(mutex_);
-    while (loop_ == nullptr)
-    {
+    while (loop_ == nullptr) {
       cond_.wait(lock);
     }
   }
   return loop_;
 }
 
-void EventLoopThread::threadFunc()
-{
+void EventLoopThread::threadFunc() {
   EventLoop loop;
-  if (callback_)
-  {
+  if (callback_) {
     callback_(&loop);
   }
   {

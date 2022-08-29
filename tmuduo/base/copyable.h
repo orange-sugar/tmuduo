@@ -1,16 +1,14 @@
 #ifndef COPYABLE_H
 #define COPYABLE_H
 
-namespace tmuduo
-{
+namespace tmuduo {
 
-class copyable 
-{
-  protected:
-    copyable()  = default;
-    ~copyable() = default;
+class copyable {
+ protected:
+  copyable() = default;
+  ~copyable() = default;
 };
 
-} // namespace tmuduo
+}  // namespace tmuduo
 
-#endif //  COPYABLE_H
+#endif  //  COPYABLE_H

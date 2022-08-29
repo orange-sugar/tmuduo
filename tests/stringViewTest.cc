@@ -1,24 +1,22 @@
-#include <string_view>
-#include <string>
+#include <assert.h>
 #include <iostream>
 #include <map>
-#include <assert.h>
+#include <string>
+#include <string_view>
 
 using namespace std;
 
-void byString(const string& str)
-{
+void byString(const string& str) {
   cout << str;
 }
 
-int main()
-{
+int main() {
   string s{"foooooooooooooooooooooooooooooooooooooooo"};
   // for (int i = 0; i < 10000000; ++i)
   // {
   //   byString(s);
   // }
-  map<int, int> m{{1,1}};
+  map<int, int> m{{1, 1}};
   const auto it = m.find(0);
   assert(it == m.end());
 }

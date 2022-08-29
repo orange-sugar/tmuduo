@@ -1,22 +1,20 @@
-#include "tmuduo/net/sql/sqlConnectionPool.h"
+#include <mysql/mysql.h>
+#include <thread>
 #include "tmuduo/base/Logging.h"
 #include "tmuduo/base/Singleton.h"
-
-#include <thread>
-
-#include <mysql/mysql.h>
+#include "tmuduo/net/sql/sqlConnectionPool.h"
 
 using namespace tmuduo;
 
 using connPool = Singleton<SQLConnectionPool>;
 
-void threadFunc()
-{
+void threadFunc() {
   LOG_DEBUG << "instance at [" << &(connPool::getInstance()) << "]";
   SQLConnection* conn;
   // loop util acquiring a conn
-  while ((conn = connPool::getInstance().takeConnection()) == nullptr);
-  
+  while ((conn = connPool::getInstance().takeConnection()) == nullptr)
+    ;
+
   MYSQL_RES* res = conn->query("select * from users.users;");
   auto row = mysql_fetch_row(res);
   LOG_INFO << row[0];
@@ -24,8 +22,7 @@ void threadFunc()
   connPool::getInstance().putConnection(conn);
 }
 
-void threadFunc2()
-{
+void threadFunc2() {
   // SQLConnection* conn = nullptr;
   SQLConnection* conn;
   MYSQL_RES* res = nullptr;
@@ -37,14 +34,11 @@ void threadFunc2()
   res = conn->query("select * from users.users;");
 
   auto row = mysql_fetch_row(res);
-  LOG_INFO << row[0] << " "
-           << row[1] << " " 
-           << row[2];
+  LOG_INFO << row[0] << " " << row[1] << " " << row[2];
   mysql_free_result(res);
 }
 
-int main()
-{ 
+int main() {
   Logger::setLogLevel(Logger::DEBUG);
 
   connPool::getInstance().init(5, "127.0.0.1", "testuser", "testuser", "users");
@@ -54,13 +48,11 @@ int main()
   std::unique_ptr<std::thread[]> threads;
   threads.reset(new std::thread[threadNum]);
 
-  for (int i = 0; i < threadNum; ++i)
-  {
+  for (int i = 0; i < threadNum; ++i) {
     threads[i] = std::thread(threadFunc2);
   }
 
-  for (int i = 0; i < threadNum; ++i)
-  {
+  for (int i = 0; i < threadNum; ++i) {
     threads[i].join();
-  }  
+  }
 }

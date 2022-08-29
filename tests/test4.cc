@@ -1,8 +1,7 @@
-#include "tmuduo/net/EventLoop.h"
-#include "tmuduo/base/Logging.h"
-
-#include <thread>
 #include <cstdio>
+#include <thread>
+#include "tmuduo/base/Logging.h"
+#include "tmuduo/net/EventLoop.h"
 
 using namespace tmuduo;
 using namespace tmuduo::net;
@@ -10,35 +9,30 @@ using namespace tmuduo::net;
 EventLoop* g_loop;
 int g_flag = 0;
 
-void run4()
-{
+void run4() {
   printf("run4(): pid = %d, flag = %d\n", getpid(), g_flag);
   g_loop->quit();
 }
 
-void run3()
-{
+void run3() {
   printf("run3(): pid = %d, flag = %d\n", getpid(), g_flag);
   g_loop->runAfter(3, run4);
   g_flag = 3;
 }
 
-void run2()
-{
+void run2() {
   printf("run2(): pid = %d, flag = %d\n", getpid(), g_flag);
   g_loop->queueInLoop(run3);
 }
 
-void run1()
-{
+void run1() {
   g_flag = 1;
   printf("run1(): pid = %d, flag = %d\n", getpid(), g_flag);
   g_loop->runInLoop(run2);
   g_flag = 2;
 }
 
-int main()
-{
+int main() {
   // Logger::setLogLevel(Logger::TRACE);
   printf("main(): pid = %d, flag = %d\n", getpid(), g_flag);
 

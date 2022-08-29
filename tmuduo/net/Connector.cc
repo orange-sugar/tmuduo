@@ -1,5 +1,4 @@
 #include "tmuduo/net/Connector.h"
-
 #include "tmuduo/net/Channel.h"
 #include "tmuduo/net/EventLoop.h"
 #include "tmuduo/net/SockOps.h"
@@ -10,69 +9,55 @@ using namespace tmuduo::net;
 const int Connector::kMaxRetryDelayMs;
 
 Connector::Connector(EventLoop* loop, const InetAddress& serverAddr)
-  : loop_(loop),
-    serverAddr_(serverAddr),
-    connect_(false),
-    state_(States::kDisconnected),
-    retryDelayMs_(kInitRetryDelayMs)
-{
+    : loop_(loop), serverAddr_(serverAddr), connect_(false), state_(States::kDisconnected),
+      retryDelayMs_(kInitRetryDelayMs) {
   LOG_DEBUG << "Connector ctor[" << this << "]";
 }
 
-Connector::~Connector()
-{
+Connector::~Connector() {
   LOG_DEBUG << "Connector dtor[" << this << "]";
   assert(!channel_);
 }
 
-void Connector::start()
-{
+void Connector::start() {
   connect_ = true;
   loop_->runInLoop(std::bind(&Connector::startInLoop, this));
 }
 
-void Connector::startInLoop()
-{
+void Connector::startInLoop() {
   loop_->assertInLoopThread();
   assert(state_ == States::kDisconnected);
-  if (connect_)
-  {
+  if (connect_) {
     connect();
-  }
-  else
-  {
+  } else {
     LOG_DEBUG << "do not  connect";
   }
 }
 
-void Connector::stop()
-{
+void Connector::stop() {
   connect_ = false;
   loop_->runInLoop(std::bind(&Connector::stopInLoop, this));
   // TODO cancel Timer
 }
 
-void Connector::stopInLoop()
-{
+void Connector::stopInLoop() {
   loop_->assertInLoopThread();
-  if (state_ == States::kConnecting)
-  {
+  if (state_ == States::kConnecting) {
     setState(States::kDisconnected);
-    int sockfd = removeAndResetChannel();	// 将通道从poller中移除关注，并将channel置空
-    retry(sockfd);		// 这里并非要重连，只是调用sockets::close(sockfd);
+    int sockfd = removeAndResetChannel();  // 将通道从poller中移除关注，并将channel置空
+    retry(sockfd);  // 这里并非要重连，只是调用sockets::close(sockfd);
   }
 }
 
-void Connector::connect()
-{
+void Connector::connect() {
   int sockfd = sockets::createNonblockingOrDie(serverAddr_.family());
   int ret = sockets::connect(sockfd, serverAddr_.getSockAddr());
   int savedErrno = (ret == 0) ? 0 : errno;
   switch (savedErrno) {
     case 0:
-    case EINPROGRESS:	// 非阻塞套接字，未连接成功返回码是EINPROGRESS表示正在连接
+    case EINPROGRESS:  // 非阻塞套接字，未连接成功返回码是EINPROGRESS表示正在连接
     case EINTR:
-    case EISCONN:			// 连接成功
+    case EISCONN:  // 连接成功
       connecting(sockfd);
       break;
 
@@ -81,7 +66,7 @@ void Connector::connect()
     case EADDRNOTAVAIL:
     case ECONNREFUSED:
     case ENETUNREACH:
-      retry(sockfd);		// 重连
+      retry(sockfd);  // 重连
       break;
 
     case EACCES:
@@ -92,7 +77,7 @@ void Connector::connect()
     case EFAULT:
     case ENOTSOCK:
       LOG_SYSERR << "connect error in Connector::startInLoop " << savedErrno;
-      sockets::close(sockfd);	// 不能重连，关闭sockfd
+      sockets::close(sockfd);  // 不能重连，关闭sockfd
       break;
 
     default:
@@ -103,8 +88,7 @@ void Connector::connect()
   }
 }
 
-void Connector::restart()
-{
+void Connector::restart() {
   loop_->assertInLoopThread();
   setState(States::kDisconnected);
   retryDelayMs_ = kInitRetryDelayMs;
@@ -112,72 +96,53 @@ void Connector::restart()
   startInLoop();
 }
 
-void Connector::connecting(int sockfd)
-{
+void Connector::connecting(int sockfd) {
   setState(States::kConnecting);
   assert(!channel_);
   channel_.reset(new Channel(loop_, sockfd));
-  channel_->setWriteCallback(
-    std::bind(&Connector::handleWrite, this));
-  channel_->setErrorCallback(
-    std::bind(&Connector::handleError, this));
+  channel_->setWriteCallback(std::bind(&Connector::handleWrite, this));
+  channel_->setErrorCallback(std::bind(&Connector::handleError, this));
   channel_->enableWriting();
 }
 
-int Connector::removeAndResetChannel()
-{
+int Connector::removeAndResetChannel() {
   channel_->disableAll();
-  channel_->remove();	
+  channel_->remove();
   int sockfd = channel_->fd();
   // 不能在这里重置channel_，因为正在调用Channel::handleEvent
-  loop_->queueInLoop(std::bind(&Connector::resetChannel, this)); // FIXME: unsafe
+  loop_->queueInLoop(std::bind(&Connector::resetChannel, this));  // FIXME: unsafe
   return sockfd;
 }
 
-void Connector::resetChannel()
-{
+void Connector::resetChannel() {
   channel_.reset();
 }
 
-void Connector::handleWrite()
-{
+void Connector::handleWrite() {
   LOG_TRACE << "Connector::handleWrite " << stateToString(state_);
-  if (state_ == States::kConnecting)
-  {
+  if (state_ == States::kConnecting) {
     int sockfd = removeAndResetChannel();
     int err = sockets::getSocketError(sockfd);
-    if (err)
-    {
-      LOG_WARN << "Connector::handleWrite - SO_ERROR = "
-               << err << " " << strerror_tl(err);
+    if (err) {
+      LOG_WARN << "Connector::handleWrite - SO_ERROR = " << err << " " << strerror_tl(err);
       retry(sockfd);
-    }
-    else if (sockets::isSelfConnect(sockfd))
-    {
+    } else if (sockets::isSelfConnect(sockfd)) {
       LOG_WARN << "Connector::handleWrite - Self connect";
       retry(sockfd);
-    }
-    else
-    {
+    } else {
       setState(States::kConnected);
-      if (connect_)
-      {
+      if (connect_) {
         newConnectionCalback_(sockfd);
-      }
-      else  
-      {
+      } else {
         sockets::close(sockfd);
       }
     }
-  }
-  else  
-  {
+  } else {
     assert(state_ == States::kDisconnected);
   }
 }
 
-void Connector::handleError()
-{
+void Connector::handleError() {
   LOG_ERROR << "Connector::handleError";
   assert(state_ == States::kConnecting);
 
@@ -187,28 +152,21 @@ void Connector::handleError()
   retry(sockfd);
 }
 
-void Connector::retry(int sockfd)
-{
+void Connector::retry(int sockfd) {
   sockets::close(sockfd);
   setState(States::kDisconnected);
-  if (connect_)
-  {
-    LOG_INFO << "Connector::retry - Retry connecting to " << serverAddr_.toIpPort()
-             << " in " << retryDelayMs_ << " milliseconds. ";
-    loop_->runAfter(retryDelayMs_/1000.0,
-                    std::bind(&Connector::startInLoop, shared_from_this()));
+  if (connect_) {
+    LOG_INFO << "Connector::retry - Retry connecting to " << serverAddr_.toIpPort() << " in "
+             << retryDelayMs_ << " milliseconds. ";
+    loop_->runAfter(retryDelayMs_ / 1000.0, std::bind(&Connector::startInLoop, shared_from_this()));
     retryDelayMs_ = std::min(retryDelayMs_ * 2, kMaxRetryDelayMs);
-  }
-  else
-  {
+  } else {
     LOG_DEBUG << "do not connect";
   }
 }
 
-std::string_view Connector::stateToString(States s)
-{
-  switch (static_cast<int>(s))
-  {
+std::string_view Connector::stateToString(States s) {
+  switch (static_cast<int>(s)) {
     case 0:
       return std::string_view("DisConnected");
       break;

@@ -6,12 +6,8 @@
 using namespace tmuduo;
 using namespace tmuduo::net;
 
-void readfile(const char* filename)
-{
-  
+void readfile(const char* filename) {
 }
 
-int main()
-{
-
+int main() {
 }

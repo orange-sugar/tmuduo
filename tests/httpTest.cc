@@ -3,7 +3,5 @@
 using namespace tmuduo;
 using namespace tmuduo::net;
 
-int main()
-{
-  
+int main() {
 }

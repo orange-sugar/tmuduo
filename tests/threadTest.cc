@@ -1,16 +1,13 @@
-#include "tmuduo/base/ThreadPool.h"
-
 #include <stdio.h>
+#include "tmuduo/base/ThreadPool.h"
 
 using namespace tmuduo;
 
-void func()
-{
+void func() {
   printf("haha\n");
 }
 
-int main()
-{
+int main() {
   ThreadPool pool(2);
   pool.pushTask(func);
 }

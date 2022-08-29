@@ -46,11 +46,39 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 include_directories(${PROJECT_SOURCE_DIR})
 
 string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
-message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " ${CMAKE_CXX_FLAGS_${BUILD_TYPE}})
+# message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " ${CMAKE_CXX_FLAGS_${BUILD_TYPE}})
 
 add_subdirectory(tmuduo/base)
 add_subdirectory(tmuduo/net)
 add_subdirectory(tests)
 add_subdirectory(examples)
+
+# clang-format
+if (NOT DEFINED CLANG_FORMAT_BIN) 
+  find_program(CLANG_FORMAT_BIN
+    NAMES clang-format clang-format-16
+    HINTS ${PROJECT_SOURCE_DIR})
+endif()
+if ("${CLANG_FORMAT_BIN}" STREQUAL "CLANG_FORMAT_BIN-NOTFOUND")
+  message(WARNING "couldn't find clang-format.")
+else()
+  message(STATUS "found clang-format at ${CLANG_FORMAT_BIN}")
+endif()
+
+# make format
+string(CONCAT FORMAT_DIRS
+  "${CMAKE_CURRENT_SOURCE_DIR}/tmuduo,"
+  # "${CMAKE_CURRENT_SOURCE_DIR}/examples,"
+  # "${CMAKE_CURRENT_SOURCE_DIR}/tests,"
+  )
+
+add_custom_target(format ${CMAKE_SOURCE_DIR}/run_clang_format.py
+  ${CLANG_FORMAT_BIN}
+  ${CMAKE_CURRENT_SOURCE_DIR}/clang_format_exclusions.txt
+  --source_dirs
+  ${FORMAT_DIRS}
+  --fix
+  # --quiet
+  )
 
 # enable_testing()

@@ -1,62 +1,54 @@
 #ifndef CURRENTTHREAD_H
 #define CURRENTTHREAD_H
 
-#include "tmuduo/base/Types.h"
-#include "tmuduo/base/Timestamp.h"
-
-#include <cstdio>
-#include <unistd.h>
+#include <linux/unistd.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
-#include <linux/unistd.h>
+#include <unistd.h>
+#include <cstdio>
+#include "tmuduo/base/Timestamp.h"
+#include "tmuduo/base/Types.h"
 
-namespace tmuduo
-{
-namespace CurrentThread 
-{
-  pid_t gettid();
-  
-  // internel
-  extern __thread int t_cachedTid;
-  extern __thread char t_tidString[32];
-  extern __thread int t_tidStringLength;
-  extern __thread const char* t_threadName;
-  // 缓存tid，提高访问速率，同时要注意检查调用者合法性
-  void cacheTid();
+namespace tmuduo {
+namespace CurrentThread {
+pid_t gettid();
 
-  inline int tid()
-  {
-    if (__builtin_expect(t_cachedTid == 0, 0))
-    {
-      cacheTid();
-    }
-    return t_cachedTid;
+// internel
+extern __thread int t_cachedTid;
+extern __thread char t_tidString[32];
+extern __thread int t_tidStringLength;
+extern __thread const char* t_threadName;
+// 缓存tid，提高访问速率，同时要注意检查调用者合法性
+void cacheTid();
+
+inline int tid() {
+  if (__builtin_expect(t_cachedTid == 0, 0)) {
+    cacheTid();
   }
-  
-  inline const char* tidString()
-  {
-    return t_tidString;
-  }
+  return t_cachedTid;
+}
 
-  inline int tidStringLength()
-  {
-    return t_tidStringLength;
-  }
+inline const char* tidString() {
+  return t_tidString;
+}
 
-  inline const char* name()
-  {
-    return t_threadName;
-  }
+inline int tidStringLength() {
+  return t_tidStringLength;
+}
 
-  bool isMainThread();
+inline const char* name() {
+  return t_threadName;
+}
 
-  void sleepUSec(int64_t usec);
+bool isMainThread();
 
-  std::string stackTrace(bool demangle);
+void sleepUSec(int64_t usec);
 
-  // std::string myStackTrace(bool demangle);
+std::string stackTrace(bool demangle);
 
-} // namespace CurrentThread
-} // namespace tmuduo
+// std::string myStackTrace(bool demangle);
 
-#endif //  CURRENTTHREAD_H
+}  // namespace CurrentThread
+}  // namespace tmuduo
+
+#endif  //  CURRENTTHREAD_H
